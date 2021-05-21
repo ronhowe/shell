@@ -1,3 +1,10 @@
+# Create a symbolic link to the repo wherever it lives.
+# Set-Location -Path "~"
+# New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
+
+# Add links to this profile from any/all PowerShell hosts (Visual Studio Code, PowerShell, etc.)
+# . "~/repos/ronhowe/powershell/profile.ps1"
+
 Write-Host "Importing profile..." -ForegroundColor Green
 
 Import-Module -Name "posh-git"
@@ -18,9 +25,10 @@ function home {
 
 function profile {
     Clear-Host
-    . "~/source/repos/ronhowe/powershell/profile.ps1"
+    . "~/repos/ronhowe/powershell/profile.ps1"
 }
+
 function repos {
     Clear-Host
-    Set-Location -Path "~/source/repos/"
+    Set-Location -Path "~/repos/"
 }
