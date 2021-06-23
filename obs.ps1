@@ -67,10 +67,14 @@ Get-ChildItem -Path $ObsPath -Include "*.mkv" -Recurse | ForEach-Object {
 
     if (-not (Test-Path -Path $Mp4Path)) {
         # https://handbrake.fr/docs/en/latest/cli/command-line-reference.html
-        Start-Process -Path $HandbrakePath -ArgumentList "--input", $MkvPath, "--output", $Mp4Path, "--all-audio" -Wait -NoNewWindow
+        Start-Process -Path $HandbrakePath -ArgumentList "--input", "`"$MkvPath`"", "--output", "`"$Mp4Path`"", "--all-audio" -Wait -NoNewWindow
     }
 
-    Remove-Item -Path $MkvPath
+# TODO
+# Verify execution result of CLI call before removing the file.
+# Also temporarily make Remove-Item include Read-Host prompt "Are you sure?"
+
+    # Remove-Item -Path $MkvPath
 }
 #endregion Process MK4
 
