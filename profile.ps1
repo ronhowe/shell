@@ -13,9 +13,10 @@ Set-Location -Path "~"
 
 function about {
     Clear-Host
-    git --version
-    gh --version
     az --version
+    gh --version
+    git --version
+    pwsh --version
 }
 
 function home {
