@@ -3,13 +3,21 @@
 # New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
 
 # Add links to this profile from any/all PowerShell hosts (Visual Studio Code, PowerShell, etc.)
-# . "~/repos/ronhowe/powershell/profile.ps1"
+# . "~/repos/Write-RonHowe/powershell/profile.ps1"
 
-Write-Host "Importing profile..." -ForegroundColor Green
+Write-Host "Loading personal profile..."
 
-Import-Module -Name "posh-git"
-
-Set-Location -Path "~"
+function Write-RonHowe {
+    Write-Host "r" -BackgroundColor Red -ForegroundColor Black -NoNewline
+    Write-Host "o" -BackgroundColor DarkYellow -ForegroundColor Black -NoNewline
+    Write-Host "n" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+    Write-Host "h" -BackgroundColor Green -ForegroundColor Black -NoNewline
+    Write-Host "o" -BackgroundColor DarkBlue -ForegroundColor Black -NoNewline
+    Write-Host "w" -BackgroundColor Blue -ForegroundColor Black -NoNewline
+    Write-Host "e" -BackgroundColor Cyan -ForegroundColor Black -NoNewline
+    Write-Host " " -NoNewline
+    Write-Host "$(Get-Date)" -BackgroundColor Magenta -ForegroundColor White
+}
 
 function about {
     Clear-Host
@@ -19,28 +27,32 @@ function about {
     pwsh --version
 }
 
+function brb {
+    Clear-Host
+
+    Write-RonHowe
+
+    $StopWatch = [System.Diagnostics.Stopwatch]::New()
+
+    $Stopwatch.Start()
+
+    Write-Host "Apologies.  I am going AFK."
+
+    while ($true) {
+        Write-Host "I have been AFK for $($StopWatch.Elapsed.Minutes) minute(s)..."
+        Start-Sleep -Seconds 60 ;
+    }
+}
+
 function home {
     Clear-Host
     Set-Location -Path "~"
 }
 
-function profile {
+function new {
     Clear-Host
-    . "~/repos/ronhowe/powershell/profile.ps1"
+    Write-RonHowe
 }
-
-# function prompt {
-
-#     Write-Host "R" -BackgroundColor Red -ForegroundColor Black -NoNewline
-#     Write-Host "O" -BackgroundColor DarkYellow -ForegroundColor Black -NoNewline
-#     Write-Host "N" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
-#     Write-Host "H" -BackgroundColor Green -ForegroundColor Black -NoNewline
-#     Write-Host "O" -BackgroundColor DarkBlue -ForegroundColor Black -NoNewline
-#     Write-Host "W" -BackgroundColor Blue -ForegroundColor Black -NoNewline
-#     Write-Host "E" -BackgroundColor Cyan -ForegroundColor Black -NoNewline
-#     Write-Host "$(Get-Date)" -BackgroundColor Magenta -ForegroundColor White
-#     "> "
-# }
 
 function prompt {
     "> "
@@ -50,3 +62,40 @@ function repos {
     Clear-Host
     Set-Location -Path "~/repos/"
 }
+
+function intro {
+    Clear-Host
+    Start-Sleep -Seconds 1
+    Write-RonHowe
+    Start-Sleep -Seconds 1
+    Write-Host "Hi.  I'm Ron."
+    Start-Sleep -Seconds 1
+    Write-Host "I like computers."
+    Start-Sleep -Seconds 1
+    Write-Host "Let's see what fun we can have."
+    Start-Sleep -Seconds 1
+}
+
+function outro {
+
+    Clear-Host
+    Start-Sleep -Seconds 1
+    Write-RonHowe
+    Start-Sleep -Seconds 1
+    Write-Host "My time is up for now."
+    Start-Sleep -Seconds 1
+    Write-Host "Thanks for watching!"
+    Start-Sleep -Seconds 1
+    Write-Host "See you soon and..."
+    Start-Sleep -Seconds 1
+    Write-Host "May the Force be with you!"
+    Start-Sleep -Seconds 1
+}
+
+Import-Module -Name "posh-git"
+
+Set-Location -Path "~"
+
+Write-RonHowe
+
+Write-Host "Hi, $($env:USERNAME).  The system is ready." -ForegroundColor Green
