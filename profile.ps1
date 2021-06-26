@@ -29,6 +29,23 @@ function profile {
     . "~/repos/ronhowe/powershell/profile.ps1"
 }
 
+# function prompt {
+
+#     Write-Host "R" -BackgroundColor Red -ForegroundColor Black -NoNewline
+#     Write-Host "O" -BackgroundColor DarkYellow -ForegroundColor Black -NoNewline
+#     Write-Host "N" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
+#     Write-Host "H" -BackgroundColor Green -ForegroundColor Black -NoNewline
+#     Write-Host "O" -BackgroundColor DarkBlue -ForegroundColor Black -NoNewline
+#     Write-Host "W" -BackgroundColor Blue -ForegroundColor Black -NoNewline
+#     Write-Host "E" -BackgroundColor Cyan -ForegroundColor Black -NoNewline
+#     Write-Host "$(Get-Date)" -BackgroundColor Magenta -ForegroundColor White
+#     "> "
+# }
+
+function prompt {
+    "> "
+}
+
 function repos {
     Clear-Host
     Set-Location -Path "~/repos/"
