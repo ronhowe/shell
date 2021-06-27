@@ -3,7 +3,7 @@
 # New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
 
 # Add links to this profile from any/all PowerShell hosts (Visual Studio Code, PowerShell, etc.)
-# . "~/repos/Write-RonHowe/powershell/profile.ps1"
+# . "~/repos/ronhowe/powershell/profile.ps1"
 
 Write-Host "Loading personal profile..."
 
@@ -65,31 +65,40 @@ function repos {
 
 function intro {
     Clear-Host
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
     Write-RonHowe
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
+    Start-Transcript
+    Start-Sleep -Seconds 3
     Write-Host "Hi.  I'm Ron."
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
     Write-Host "I like computers."
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
+    Write-Host "I like Dungeons & Dragons."
+    Start-Sleep -Seconds 3
+    Write-Host "I like Star Wars."
+    Start-Sleep -Seconds 3
     Write-Host "Let's see what fun we can have."
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
 }
 
 function outro {
 
     Clear-Host
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
     Write-RonHowe
-    Start-Sleep -Seconds 1
-    Write-Host "My time is up for now."
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
+    Write-Host "Sorry.  That's all for now."
+    Start-Sleep -Seconds 3
     Write-Host "Thanks for watching!"
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
     Write-Host "See you soon and..."
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
     Write-Host "May the Force be with you!"
-    Start-Sleep -Seconds 1
+    Start-Sleep -Seconds 3
+    Stop-Transcript
+    Start-Sleep -Seconds 3
+    Clear-Host
 }
 
 Import-Module -Name "posh-git"
