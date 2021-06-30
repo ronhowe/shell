@@ -108,3 +108,5 @@ Set-Location -Path "~"
 Write-RonHowe
 
 Write-Host "Hi, $($env:USERNAME).  The system is ready." -ForegroundColor Green
+
+Write-Host "Would you like to play a game?" -ForegroundColor Green
