@@ -54,9 +54,11 @@ function new {
     Write-RonHowe
 }
 
-# function prompt {
-#     "> "
-# }
+<#
+function prompt {
+    "> "
+}
+#>
 
 function repos {
     Clear-Host
