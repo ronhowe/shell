@@ -62,7 +62,12 @@ function prompt {
 
 function repos {
     Clear-Host
-    Set-Location -Path "~/repos/"
+    Push-Location -Path "~/repos/"
+}
+
+function junk {
+    Clear-Host
+    Push-Location -Path "$env:TEMP/junk"
 }
 
 function intro {
