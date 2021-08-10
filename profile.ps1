@@ -25,6 +25,11 @@ function about {
     gh --version
     git --version
     pwsh --version
+    $CurrentModule = Find-Module -Name 'Az'
+    $InstalledVersion = Get-Module -Name 'Az' -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1
+    if ($CurrentModule.Version -ne $InstalledVersion.Version) { Write-Host "Az module upgrade is available." -ForegroundColor Red }
+    Write-Host "Current Az Module" $CurrentModule.Version.ToString()
+    Write-Host "Installed Az Module" $InstalledVersion.Version.ToString()
 }
 
 function brb {
