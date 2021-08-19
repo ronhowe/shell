@@ -6,7 +6,8 @@ throw "Safety Net"
 #region Get Secret
 
 $UserName = "Administrator"
-$Password = Get-Content -Path "C:\Users\ronhowe\OneDrive\Documents\DevSecOps\secret.txt" | ConvertTo-SecureString -AsPlainText -Force
+$Password = Get-Content -Path "C:\Users\ronhowe\OneDrive\Documents\DevSecOps\secret.txt" |
+ConvertTo-SecureString -AsPlainText -Force
 $Credential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $UserName, $Password
 
 #endregion Get Secret
@@ -98,7 +99,11 @@ Configuration "CreateVirtualMachines" {
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $IPAddress
+        $IPAddress,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $DnsServer
     )
 
     Import-DscResource -ModuleName "xHyper-V"
@@ -144,7 +149,7 @@ Configuration "CreateVirtualMachines" {
                 IpAddress      = $IPAddress
                 Subnet         = "255.255.240.0"
                 DefaultGateway = "172.18.48.1"
-                DnsServer      = "172.18.48.1"
+                DnsServer      = $DnsServer
             }
         }
     }
@@ -152,13 +157,13 @@ Configuration "CreateVirtualMachines" {
 
 Push-Location $env:TEMP
 
-CreateVirtualMachines -VMName "DC01" -IPAddress "172.18.61.4" -OutputPath ./CreateVirtualMachines
+CreateVirtualMachines -VMName "DC01" -IPAddress "172.18.61.4" -DnsServer "172.18.48.1" -OutputPath ./CreateVirtualMachines
 Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force -Verbose
 
-CreateVirtualMachines -VMName "SQL01" -IPAddress "172.18.61.5" -OutputPath ./CreateVirtualMachines
+CreateVirtualMachines -VMName "SQL01" -IPAddress "172.18.61.5" -DnsServer "172.18.48.1" -OutputPath ./CreateVirtualMachines
 Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force -Verbose
 
-CreateVirtualMachines -VMName "WEB01" -IPAddress "172.18.61.6" -OutputPath ./CreateVirtualMachines
+CreateVirtualMachines -VMName "WEB01" -IPAddress "172.18.61.6" -DnsServer "172.18.48.1" -OutputPath ./CreateVirtualMachines
 Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force -Verbose
 
 Pop-Location
@@ -212,25 +217,40 @@ Pop-Location
 
 #region Start Virtual Machines
 
-@("DC01", "SQL01", "WEB01") | Start-VM
+@("DC01", "SQL01", "WEB01") |
+Start-VM
 
 #endregion Start Virtual Machines
 
 #region Stop Virtual Machines
 
-@("DC01", "SQL01", "WEB01") | Stop-VM
+@("DC01", "SQL01", "WEB01") |
+Stop-VM -Force
 
 #endregion Stop Virtual Machines
 
 #region Create Checkpoints
 
-@("DC01", "SQL01", "WEB01") | Checkpoint-VM -SnapshotName "CORE"
+@("DC01", "SQL01", "WEB01") |
+Checkpoint-VM -SnapshotName "CORE"
 
 #endregion Create Checkpoints
 
+#region Restore Checkpoints
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Restore-VMSnapshot -VMName $_ -Name "CORE" -Confirm:$false
+}
+
+#endregion Restore Checkpoints
+
 #region Remove Checkpoints
 
-@("DC01", "SQL01", "WEB01") | ForEach-Object { Remove-VMCheckpoint -VMName $_ -Name "CORE" -Confirm:$false }
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Remove-VMCheckpoint -VMName $_ -Name "CORE" -Confirm:$false
+}
 
 #endregion Remove Checkpoints
 
@@ -337,35 +357,80 @@ while (Get-Job -State "Running") {
 #############################################################################################################################################################################
 #region Network
 
-Enter-PSSession -VMName "WEB01"
+#region Test Net Connection
 
-Get-NetIPConfiguration
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Test-NetConnection
+    }
+}
 
-# Microsoft Hyper-V Network Adapter
+#endregion Test Net Connection
 
-Get-NetIPConfiguration | Where-Object { $_.InterfaceDescription -eq "Microsoft Hyper-V Network Adapter" }
+#region Get Net Configuration
 
-Get-NetIPConfiguration | Where-Object { $_.InterfaceDescription -eq "Microsoft Hyper-V Network Adapter" } -OutVariable Interface
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Get-NetAdapter -InterfaceDescription "Microsoft Hyper-V Network Adapter" |
+        Get-NetIPConfiguration
+    }
+}
 
-$Interface
+#endregion Get Net Configuration
 
-ipconfig
+#region Get DNS Configuration
 
-New-NetIPAddress -InterfaceIndex 3 -IPAddress 172.18.61.10 -PrefixLength 20 -DefaultGateway 172.18.48.1
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Get-NetAdapter -InterfaceDescription "Microsoft Hyper-V Network Adapter" |
+        Get-DnsClientServerAddress -AddressFamily IPv4
+    }
+}
 
-Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses 172.18.61.4, 172.18.48.1
+#endregion Get DNS Configuration
 
-Restart-Computer -Force
+#region Set DNS Configuration
 
-Test-NetConnection
+# TODO
+# Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses 172.18.61.4, 172.18.48.1
+# Restart-Computer -Force
 
-Get-NetConnectionProfile
+#endregion Set DNS Configuration
 
-Set-NetConnectionProfile -InterfaceIndex 13 -NetworkCategory Private
+#region Get Net Connection Profile
 
-Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses 172.18.61.4, 172.18.48.1
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Get-NetAdapter -InterfaceDescription "Microsoft Hyper-V Network Adapter"  |
+        Get-NetConnectionProfile
+    }
+}
 
-Add-Computer -DomainName "LAB.LOCAL" -Restart
+#endregion Get Net Connection Profile
+
+#region Set Net Connection Profile
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Get-NetAdapter -InterfaceDescription "Microsoft Hyper-V Network Adapter"  |
+        Set-NetConnectionProfile -NetworkCategory Private -Verbose
+    }
+}
+
+#endregion Set Net Connection Profile
 
 #endregion Network
+#############################################################################################################################################################################
+
+#############################################################################################################################################################################
+#region Active Directory
+
+# Add-Computer -DomainName "LAB.LOCAL" -Restart
+
+#endregion Active Directory
 #############################################################################################################################################################################
