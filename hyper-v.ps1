@@ -100,6 +100,8 @@ Start-DscConfiguration -Path ./SpinUp -Verbose -Wait -Force
 SpinUp -VMName "WEB01" -IPAddress "172.18.61.6" -OutputPath ./SpinUp
 Start-DscConfiguration -Path ./SpinUp -Verbose -Wait -Force
 
+Pop-Location
+
 #endregion Spin Up
 
 #region Spin Down
@@ -137,13 +139,56 @@ Configuration "SpinDown" {
 
 Push-Location $env:TEMP
 
-SpinDown -VMName "DC01" -OutputPath ./SpinDown
-Start-DscConfiguration -Path ./SpinDown -Verbose -Wait -Force
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Stop-VM -VMName $_
+    SpinDown -VMName $_ -OutputPath ./SpinDown
+    Start-DscConfiguration -Path ./SpinDown -Verbose -Wait -Force
+}
 
-SpinDown -VMName "SQL01" -OutputPath ./SpinDown
-Start-DscConfiguration -Path ./SpinDown -Verbose -Wait -Force
-
-SpinDown -VMName "WEB01" -OutputPath ./SpinDown
-Start-DscConfiguration -Path ./SpinDown -Verbose -Wait -Force
+Pop-Location
 
 #endregion Spin Down
+
+#region Get Virtual Machines
+
+@("DC01", "SQL01", "WEB01") |
+Get-VM
+
+#endregion Get Virtual Machines
+
+#region Stop Virtual Machines
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Stop-VM -Name $_
+}
+
+#endregion Stop Virtual Machines
+
+#region Start Virtual Machines
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Start-VM -Name $_
+}
+
+#endregion Start Virtual Machines
+
+#region Create Checkpoint
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Checkpoint-VM -Name $_ -SnapshotName "BASE"
+}
+
+#endregion Create Checkpoint
+
+#region Remove Checkpoint
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Remove-VMCheckpoint -VMName $_ -Name "BASE" -Confirm:$false
+}
+
+#endregion Remove Checkpoint
