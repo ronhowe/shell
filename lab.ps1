@@ -1,28 +1,79 @@
 throw "Safety Net"
 
-$Credential = Get-Credential -Message "Enter Administrator Credential" -UserName "Administrator"
+#############################################################################################################################################################################
+#region Secrets
+
+#region Get Secret
+
+$UserName = "Administrator"
+$Password = Get-Content -Path "C:\Users\ronhowe\OneDrive\Documents\DevSecOps\secret.txt" | ConvertTo-SecureString -AsPlainText -Force
+$Credential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $UserName, $Password
+
+#endregion Get Secret
+
+#endregion Secrets
+#############################################################################################################################################################################
 
 #############################################################################################################################################################################
 #region Prerequisites
 
-# Requires Windows PowerShell
-if ($PSVersionTable.PSEdition -ne "Desktop") {
+#region Requires Windows PowerShell
+
+if ($PSVersionTable.PSEdition -eq "Desktop") {
+    Write-Host "Windows PowerShell OK" -ForegroundColor Green
+}
+else {
     Write-Error "Requires Windows PowerShell" -ErrorAction Stop
 }
 
-# Requires Run As Administrator
-if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+#endregion Requires Windows PowerShell
+
+#region Requires Run As Administrator
+
+if (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Run As Administrator OK" -ForegroundColor Green
+}
+else {
     Write-Error "Not running as Administrator." -ErrorAction Stop
 }
 
-# Requires Hyper-V Module
-Import-Module -Name "Hyper-V"
+#endregion Requires Run As Administrator
 
-# Requires xHyper-V DSC Resource
-Install-Module -Name "xHyper-V"
+#region Requires Hyper-V Module
 
-# Requires Unrestricted Execution Policy
-Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+if (Get-Module -Name "Hyper-V" -ListAvailable) {
+    Import-Module -Name "Hyper-V"
+    Write-Host "Hyper-V Module OK" -ForegroundColor Green
+}
+else {
+    Write-Error "Install Hyper-V Module" -ErrorAction Stop
+}
+
+#endregion Requires Hyper-V Module
+
+#region Requires xHyper-V DSC Resource
+
+if (Get-Module -Name "xHyper-V" -ListAvailable) {
+    Write-Host "xHyper-V DSC Resource OK" -ForegroundColor Green
+}
+else {
+    Write-Error "Install xHyper-V DSC Resource" -ErrorAction Stop
+    # Install-Module -Name "xHyper-V"
+}
+
+#endregion Requires xHyper-V DSC Resource
+
+#region Requires Unrestricted Execution Policy
+
+if ((Get-ExecutionPolicy) -eq "Unrestricted") {
+    Write-Host "Execution Policy OK" -ForegroundColor Green
+}
+else {
+    Write-Error "Set Execution Policy" -ErrorAction Stop
+    # Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+}
+
+#endregion Requires Unrestricted Execution Policy
 
 #endregion Prerequisites
 #############################################################################################################################################################################
@@ -30,10 +81,13 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 #############################################################################################################################################################################
 #region Hyper-V
 
-# Get Virtual Machine(s)
+#region Get Virtual Machines
+
 @("DC01", "SQL01", "WEB01") | Get-VM
 
-#region Create Virtual Machine(s)
+#endregion Get Virtual Machines
+
+#region Create Virtual Machines
 
 Configuration "CreateVirtualMachines" {
     param
@@ -99,19 +153,19 @@ Configuration "CreateVirtualMachines" {
 Push-Location $env:TEMP
 
 CreateVirtualMachines -VMName "DC01" -IPAddress "172.18.61.4" -OutputPath ./CreateVirtualMachines
-Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force
+Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force -Verbose
 
 CreateVirtualMachines -VMName "SQL01" -IPAddress "172.18.61.5" -OutputPath ./CreateVirtualMachines
-Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force
+Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force -Verbose
 
 CreateVirtualMachines -VMName "WEB01" -IPAddress "172.18.61.6" -OutputPath ./CreateVirtualMachines
-Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force
+Start-DscConfiguration -Path ./CreateVirtualMachines -Wait -Force -Verbose
 
 Pop-Location
 
-#endregion Create Virtual Machine(s)
+#endregion Create Virtual Machines
 
-#region Delete Virtual Machine(s)
+#region Delete Virtual Machines
 
 Configuration "DeleteVirtualMachines" {
     param
@@ -149,24 +203,36 @@ Push-Location $env:TEMP
 @("DC01", "SQL01", "WEB01") |
 ForEach-Object {
     DeleteVirtualMachines -VMName $_ -OutputPath ./DeleteVirtualMachines
-    Start-DscConfiguration -Path ./DeleteVirtualMachines -Wait -Force
+    Start-DscConfiguration -Path ./DeleteVirtualMachines -Wait -Force -Verbose
 }
 
 Pop-Location
 
-#endregion Delete Virtual Machine(s)
+#endregion Delete Virtual Machines
 
-# Start Virtual Machine(s)
+#region Start Virtual Machines
+
 @("DC01", "SQL01", "WEB01") | Start-VM
 
-# Stop Virtual Machine(s)
+#endregion Start Virtual Machines
+
+#region Stop Virtual Machines
+
 @("DC01", "SQL01", "WEB01") | Stop-VM
 
-# Create Checkpoint(s)
+#endregion Stop Virtual Machines
+
+#region Create Checkpoints
+
 @("DC01", "SQL01", "WEB01") | Checkpoint-VM -SnapshotName "CORE"
 
-# Remove Checkpoint(s)
+#endregion Create Checkpoints
+
+#region Remove Checkpoints
+
 @("DC01", "SQL01", "WEB01") | ForEach-Object { Remove-VMCheckpoint -VMName $_ -Name "CORE" -Confirm:$false }
+
+#endregion Remove Checkpoints
 
 #endregion Hyper-V
 #############################################################################################################################################################################
@@ -174,21 +240,49 @@ Pop-Location
 #############################################################################################################################################################################
 #region Windows
 
-# Rename Computer(s)
+#region Rename Computers
+
 @("DC01", "SQL01", "WEB01") |
 ForEach-Object {
-    Invoke-Command -VMName $_ -Credential $Credential -AsJob -ScriptBlock {
-        Rename-Computer -NewName $using:_ -Restart -Force
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Rename-Computer -NewName $using:_ -Restart -Force -Verbose
     }
 }
 
-# Set TimeZone
+#endregion Rename Computers
+
+#region Restart Computers
+
 @("DC01", "SQL01", "WEB01") |
 ForEach-Object {
-    Invoke-Command -ComputerName $_ -Credential $Credential -AsJob -ScriptBlock {
-        Set-TimeZone -Name "Eastern Standard Time"
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Restart-Computer -Force -Verbose
     }
 }
+
+#endregion Restart Computers
+
+#region Stop Computers
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Stop-Computer -Force -Verbose
+    }
+}
+
+#endregion Stop Computers
+
+#region Set TimeZone
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Set-TimeZone -Name "Eastern Standard Time" -Verbose
+    }
+}
+
+#endregion Set TimeZone
 
 #endregion Windows
 #############################################################################################################################################################################
@@ -196,15 +290,46 @@ ForEach-Object {
 #############################################################################################################################################################################
 #region Windows Updates
 
+#region Install Prequisites
+
 @("DC01", "SQL01", "WEB01") |
 ForEach-Object {
-    Invoke-Command -ComputerName $_ -Credential $Credential -AsJob -ScriptBlock {
-        Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.201" -Force
-        Install-Module -Name "PSWindowsUpdate" -Force
-        Get-WindowsUpdate
-        Install-WindowsUpdate -AutoReboot -Confirm:$false
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Install-PackageProvider -Name "NuGet" -MinimumVersion "2.8.5.201" -Force -Verbose
+        Install-Module -Name "PSWindowsUpdate" -Force -Verbose
     }
 }
+
+#endregion Install Prequisites
+
+#region Get Windows Updates
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -ScriptBlock {
+        Import-Module -Name "PSWindowsUpdate"
+        Get-WindowsUpdate -Verbose | Format-Table -AutoSize
+    }
+}
+
+#endregion Get Windows Updates
+
+#region Install Windows Updates
+
+@("DC01", "SQL01", "WEB01") |
+ForEach-Object {
+    Invoke-Command -VMName $_ -Credential $Credential -AsJob -ScriptBlock {
+        Import-Module -Name "PSWindowsUpdate"
+        Install-WindowsUpdate -AutoReboot -Confirm:$false -Verbose
+    }
+}
+
+while (Get-Job -State "Running") {
+    Write-Host "Waiting 10 second(s) for jobs to complete..." ;
+    Start-Sleep -Seconds 10
+}
+
+#endregion Install Windows Updates
 
 #endregion Windows Updates
 #############################################################################################################################################################################
@@ -228,7 +353,7 @@ ipconfig
 
 New-NetIPAddress -InterfaceIndex 3 -IPAddress 172.18.61.10 -PrefixLength 20 -DefaultGateway 172.18.48.1
 
-Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses 172.18.61.4,172.18.48.1
+Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses 172.18.61.4, 172.18.48.1
 
 Restart-Computer -Force
 
@@ -238,7 +363,7 @@ Get-NetConnectionProfile
 
 Set-NetConnectionProfile -InterfaceIndex 13 -NetworkCategory Private
 
-Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses 172.18.61.4,172.18.48.1
+Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses 172.18.61.4, 172.18.48.1
 
 Add-Computer -DomainName "LAB.LOCAL" -Restart
 
