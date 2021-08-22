@@ -113,7 +113,9 @@ function outro {
     Clear-Host
 }
 
-Import-Module -Name "posh-git"
+if (Get-Module -Name "posh-git" -ListAvailable) {
+    Import-Module -Name "posh-git"
+}
 
 Set-Location -Path "~"
 
