@@ -59,10 +59,37 @@ if (Get-Module -Name "xHyper-V" -ListAvailable) {
 }
 else {
     Write-Error "Install xHyper-V DSC Resource" -ErrorAction Stop
-    # Install-Module -Name "xHyper-V"
+    # Find-Module -Name "xHyper-V"
+    # Install-Module -Name "xHyper-V" -Force
 }
 
 #endregion Requires xHyper-V DSC Resource
+
+#region Requires ActiveDirectoryDsc DSC Resource
+
+if (Get-Module -Name "ActiveDirectoryDsc" -ListAvailable) {
+    Write-Host "ActiveDirectoryDsc DSC Resource OK" -ForegroundColor Green
+}
+else {
+    Write-Error "Install ActiveDirectoryDsc DSC Resource" -ErrorAction Stop
+    # Find-Module -Name "ActiveDirectoryDsc"
+    # Install-Module -Name "ActiveDirectoryDsc" -Force
+}
+
+#endregion Requires ActiveDirectoryDsc DSC Resource
+
+#region Requires ActiveDirectoryCSDsc DSC Resource
+
+if (Get-Module -Name "ActiveDirectoryCSDsc" -ListAvailable) {
+    Write-Host "ActiveDirectoryCSDsc DSC Resource OK" -ForegroundColor Green
+}
+else {
+    Write-Error "Install ActiveDirectoryCSDsc DSC Resource" -ErrorAction Stop
+    # Find-Module -Name "ActiveDirectoryCSDsc"
+    Install-Module -Name "ActiveDirectoryCSDsc" -Force
+}
+
+#endregion Requires ActiveDirectoryCSDsc DSC Resource
 
 #region Requires Unrestricted Execution Policy
 
@@ -429,6 +456,129 @@ ForEach-Object {
 
 #############################################################################################################################################################################
 #region Active Directory
+
+Configuration "ConfigureDomainController" {
+    param(
+        [Parameter(Mandatory = $true)]
+        [PSCredential]
+        $Credential
+    )
+
+    Import-DscResource -ModuleName "PSDesiredStateConfiguration"
+    Import-DscResource -ModuleName "ActiveDirectoryDsc"
+    Import-DscResource -ModuleName "ActiveDirectoryCSDsc"
+
+    Node "DC01" {
+        # Installs Active Directory.
+        WindowsFeature "InstallActiveDirectoryServices" {
+            Ensure = "Present"
+            Name   = "AD-Domain-Services"
+        }
+
+        # Installs Active Directory tools.
+        WindowsFeature "InstallActiveDirectoryTools" {
+            Ensure    = "Present"
+            Name      = "RSAT-ADDS"
+            DependsOn = "[WindowsFeature]InstallActiveDirectoryServices"
+        }
+
+        # Configures Active Directory.
+        ADDomain "ConfigureActiveDirectory" {
+            DomainName                    = "LAB.LOCAL"
+            Credential                    = $Credential
+            SafemodeAdministratorPassword = $Credential
+            DatabasePath                  = "C:\Windows\NTDS"
+            LogPath                       = "C:\Windows\NTDS"
+            SysvolPath                    = "C:\Windows\SYSVOL"
+            DependsOn                     = @("[WindowsFeature]InstallActiveDirectoryServices", "[WindowsFeature]InstallActiveDirectoryServices")
+        }
+
+        #region TODO
+        # Reboots the node after configuring Active Directory in order to complete promotion as a domain controller.
+        # This is done with a custom script instead of PendingReboot because (for some reason) a domain controller
+        # will DSC reboot via xPendingUpdate when a patch is installed or pending reboot from an install even if
+        # $SkipWindowsUpdate is set to $true.
+        # $DomainControllerRebootedPostPromotionValueName = Resolve-DscConfigurationProperty -Node $Node -PropertyName "DomainControllerRebootedPostPromotionValueName"
+        # $DomainControllerRebootedPostPromotionValueType = Resolve-DscConfigurationProperty -Node $Node -PropertyName "DomainControllerRebootedPostPromotionValueType"
+        # $DomainControllerRebootedPostPromotionValueValue = Resolve-DscConfigurationProperty -Node $Node -PropertyName "DomainControllerRebootedPostPromotionValueValue"
+        # Script "RebootAfterPromotion" {
+        #     GetScript  = {
+        #         $Result = Get-ItemPropertyValue -Path $using:IdiDscRegistryKeyPath -Name $using:DomainControllerRebootedPostPromotionValueName
+        #         return @{ Result = "$($using:DomainControllerRebootedPostPromotionValueName) : $Result" };
+        #     }
+        #     SetScript  = {
+        #         if (-not (Test-Path -Path $using:IdiDscRegistryKeyPath)) {
+        #             New-Item -Path $using:IdiDscRegistryKeyPath -Force | Out-Null
+        #         }
+        #         New-ItemProperty -Path $using:IdiDscRegistryKeyPath -Name $using:DomainControllerRebootedPostPromotionValueName -Value $using:DomainControllerRebootedPostPromotionValueValue -PropertyType $($using:DomainControllerRebootedPostPromotionValueType).ToUpper() -Force | Out-Null
+        #         [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
+        #         $global:DSCMachineStatus = 1
+        #     }
+        #     TestScript = {
+        #         if (Test-Path -Path $using:IdiDscRegistryKeyPath) {
+        #             $Item = Get-ItemProperty -Path $using:IdiDscRegistryKeyPath -Name $using:DomainControllerRebootedPostPromotionValueName -ErrorAction "SilentlyContinue"
+        #             if ($Item) {
+        #                 $Value = Get-ItemPropertyValue -Path $using:IdiDscRegistryKeyPath -Name $using:DomainControllerRebootedPostPromotionValueName
+        #                 if ($Value -eq $using:DomainControllerRebootedPostPromotionValueValue) {
+        #                     return $true
+        #                 }
+        #             }
+        #         }
+        #         return $false
+        #     }
+        #     DependsOn  = "[ADDomain]ConfigureActiveDirectory"
+        # }
+                
+        # # Waits for Active Directory to become available.
+        # WaitForADDomain "WaitForActiveDirectory" {
+        #     DomainName   = "LAB.LOCAL"
+        #     Credential   = $Credential
+        #     RestartCount = 3
+        #     WaitTimeout  = 60
+        # }
+                
+        # # Enables the Active Directory recycle bin.
+        # ADOptionalFeature "EnableActiveDirectoryRecycleBin" {
+        #     FeatureName                       = "Recycle Bin Feature"
+        #     EnterpriseAdministratorCredential = $Credential
+        #     ForestFQDN                        = "LAB.LOCAL"
+        #     DependsOn                         = "[WaitForADDomain]WaitForActiveDirectory"
+        # }
+                
+        # # Installs Active Directory Certificate Services.
+        # WindowsFeatureSet "InstallActiveDirectoryCertificateServices" {
+        #     Name      = @("AD-Certificate", "ADCS-Cert-Authority", "ADCS-Web-Enrollment", "ADCS-Enroll-Web-Pol", "ADCS-Enroll-Web-Svc", "RSAT-ADCS", "RSAT-ADCS-Mgmt")
+        #     Ensure    = "Present"
+        #     DependsOn = "[WaitForADDomain]WaitForActiveDirectory"
+        # }
+                
+        # # Configures the Active Directory Certificate Services certificate authority.
+        # AdcsCertificationAuthority "ConfigureADCSCertificationAuthority" {
+        #     IsSingleInstance = "Yes"
+        #     Credential       = $Credential
+        #     CAType           = "EnterpriseRootCA"
+        #     Ensure           = "Present"
+        #     DependsOn        = "[WindowsFeatureSet]InstallActiveDirectoryCertificateServices"
+        # }
+                
+        # # Configures the Active Directory Certificate Services web enrollment endpoint.
+        # AdcsWebEnrollment "ConfigureADCSWebEnrollment" {
+        #     IsSingleInstance = "Yes"
+        #     Credential       = $Credential
+        #     Ensure           = "Present"
+        #     DependsOn        = "[AdcsCertificationAuthority]ConfigureADCSCertificationAuthority"
+        # }
+        #endregion TODO
+    }
+}
+
+Push-Location $env:TEMP
+
+ConfigureDomainController -Credential $Credential -OutputPath ./ConfigureDomainController
+$CimSession = New-CimSession -ComputerName "DC01" -Credential $Credential
+Start-DscConfiguration -CimSession $CimSession -Path ./ConfigureDomainController -Wait -Force -Verbose
+
+Pop-Location
 
 # Add-Computer -DomainName "LAB.LOCAL" -Restart
 
