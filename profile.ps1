@@ -131,6 +131,10 @@ begin {
         return "> "
     }
 
+    function reload {
+        . "~/repos/ronhowe/powershell/profile.ps1"
+    }
+    
     function repos {
         Clear-Host
         Push-Location -Path "~/repos/"
