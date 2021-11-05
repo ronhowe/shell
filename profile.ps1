@@ -35,8 +35,8 @@ begin {
         git --version
         pwsh --version
         code --version
-        $CurrentModule = Find-Module -Name 'Az'
-        $InstalledVersion = Get-Module -Name 'Az' -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1
+        $CurrentModule = Find-Module -Name "Az"
+        $InstalledVersion = Get-Module -Name "Az" -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1
         if ($CurrentModule.Version -ne $InstalledVersion.Version) { Write-Host "Az module upgrade is available." -ForegroundColor Red }
         Write-Host "Current Az Module" $CurrentModule.Version.ToString()
         Write-Host "Installed Az Module" $InstalledVersion.Version.ToString()
@@ -132,11 +132,11 @@ begin {
     }
 
     function reload {
-        . "~/repos/ronhowe/powershell/profile.ps1"
+        . $profile
     }
     
     function repos {
         Clear-Host
-        Push-Location -Path "~/repos/"
+        Push-Location -Path "~/repos"
     }
 }
