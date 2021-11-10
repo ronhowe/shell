@@ -16,6 +16,16 @@ param(
 
 $ProgressPreference = "SilentlyContinue"
 
+function Get-SwitchIpAddress {
+    return (Get-NetIPConfiguration -InterfaceAlias 'vEthernet (Default Switch)' | Select-Object -ExpandProperty "IPv4Address" | Select-Object -Property "IPAddress").IPAddress
+}
+
+function Get-LabDomainServerIpAddress { 
+    $IpAddress = $(Get-SwitchIpAddress).Split('.')
+    $IpAddress[-1] = 10
+    return $IpAddress -join '.'
+}
+
 Configuration "NewLabDomainServerDsc" {
     param
     (
@@ -35,19 +45,19 @@ Configuration "NewLabDomainServerDsc" {
     Import-DscResource -ModuleName "xHyper-V"
 
     Node "localhost" {
-        xVMNetworkAdapter $VMName {
-            Id             = $VMName
-            Name           = $VMName
-            Ensure         = "Present"
-            SwitchName     = "Default Switch"
-            VMName         = $VMName
-            NetworkSetting = xNetworkSettings {
-                IpAddress      = "172.18.61.4"
-                Subnet         = "255.255.240.0"
-                DefaultGateway = "172.18.48.1"
-                DnsServer      = "172.18.48.1"
-            }
-        }
+        # xVMNetworkAdapter $VMName {
+        #     Id             = $VMName
+        #     Name           = $VMName
+        #     Ensure         = "Present"
+        #     SwitchName     = "Default Switch"
+        #     VMName         = $VMName
+        #     NetworkSetting = xNetworkSettings {
+        #         IpAddress      = Get-LabDomainServerIpAddress
+        #         Subnet         = "255.255.240.0"
+        #         DefaultGateway = Get-SwitchIpAddress
+        #         DnsServer      = Get-SwitchIpAddress
+        #     }
+        # }
     }
 }
 
