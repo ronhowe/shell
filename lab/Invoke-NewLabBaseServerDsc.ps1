@@ -52,6 +52,7 @@ Configuration "NewLabBaseServerDsc" {
             VhdPath                     = Join-Path -Path $VirtualHardDisksPath -ChildPath "$VMName.vhdx"
             EnableGuestService          = $true
             AutomaticCheckpointsEnabled = $false
+            SwitchName                  = "Default Switch"
         }
         xVMDvdDrive NewVMDvdDriveISO {
             Ensure             = "Present"
