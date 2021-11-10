@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param()
 
-. "$PSScriptRoot\Import-Configuration.ps1"
+. "$PSScriptRoot/Import-Configuration.ps1"
 
 if (Get-SecretVault -Name $Configuration.SecretVault -ErrorAction SilentlyContinue) {
     Unregister-SecretVault -Name $Configuration.SecretVault
@@ -12,8 +12,8 @@ if (Get-SecretVault -Name $Configuration.SecretVault -ErrorAction SilentlyContin
 
 Register-SecretVault -Name $Configuration.SecretVault -ModuleName "Microsoft.PowerShell.SecretStore" -DefaultVault
 
-Get-SecretVault -Name $Configuration.SecretVault
+$AdministratorPassword = Read-Host -Prompt "AdministratorPassword" -AsSecureString
+Set-Secret -Name "AdministratorPassword" -Vault $Configuration.SecretVault -SecureStringSecret $AdministratorPassword
 
-$Password = Read-Host -Prompt "AdministratorPassword" -AsSecureString
-
-Set-Secret -Name "AdministratorPassword" -Vault $Configuration.SecretVault -SecureStringSecret $Password
+$CertificatePassword = Read-Host -Prompt "CertificatePassword" -AsSecureString
+Set-Secret -Name "CertificatePassword" -Vault $Configuration.SecretVault -SecureStringSecret $CertificatePassword
