@@ -5,6 +5,8 @@
 # Add links to this profile from any/all PowerShell hosts (Visual Studio Code, PowerShell, etc.)
 # . "~/repos/ronhowe/powershell/profile.ps1"
 
+$ProgressPreference = "SilentlyContinue"
+
 . "$PSScriptRoot\Import-Dependencies.ps1"
 . "$PSScriptRoot\Import-Configuration.ps1"
 . "$PSScriptRoot\Import-Secrets.ps1"
