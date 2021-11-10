@@ -6,7 +6,6 @@ param()
 
 . "$PSScriptRoot\Import-Configuration.ps1"
 
+$AdministratorUsername = "Administrator"
 $AdministratorPassword = Get-Secret -Name "AdministratorPassword" -Vault $Configuration.SecretVault
-
-# Suppress PSScriptAnalyzer(PSUseDeclaredVarsMoreThanAssignments)
-$AdministratorPassword | Out-Null
+[PSCredential]$AdministratorCredential = New-Object System.Management.Automation.PSCredential ($AdministratorUsername, $AdministratorPassword)
