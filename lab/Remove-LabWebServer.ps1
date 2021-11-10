@@ -1,6 +1,8 @@
 #requires -RunAsAdministrator
 #requires -PSEdition Core
 
+Get-VM -Name "WEB01" -ErrorAction SilentlyContinue | Stop-VM -ErrorAction SilentlyContinue
+
 $ArgumentList = @(
     "-NoLogo",
     "-NoProfile",
