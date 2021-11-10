@@ -1,7 +1,5 @@
+#requires -PSEdition Core
 #requires -Modules "PowerConfig"
-
-[CmdletBinding()]
-param()
 
 # https://github.com/JustinGrote/PowerConfig/blob/main/Demo/PowerConfigDemo.ps1
 
@@ -16,5 +14,5 @@ if (Test-Path -Path $UserConfigurationPath -ErrorAction SilentlyContinue) {
 
 $Configuration = $PowerConfig | Get-PowerConfig
 
-# Suppress PSScriptAnalyzer(PSUseDeclaredVarsMoreThanAssignments)
+# Suppresses PSScriptAnalyzer(PSUseDeclaredVarsMoreThanAssignments).
 $Configuration | Out-Null

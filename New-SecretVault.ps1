@@ -1,8 +1,6 @@
+#requires -PSEdition Core
 #requires -Modules "Microsoft.PowerShell.SecretManagement"
 #requires -Modules "Microsoft.PowerShell.SecretStore"
-
-[CmdletBinding()]
-param()
 
 . "$PSScriptRoot\Import-Configuration.ps1"
 
