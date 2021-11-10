@@ -19,7 +19,7 @@ param(
     $SqlServerIsoPath
 )
 
-& "$PSScriptRoot/Invoke-NewLabBaseServerDsc.ps1" -VMName $VMName -VirtualHardDisksPath $VirtualHardDisksPath -WindowsServerIsoPath $WindowsServerIsoPath
+& "$PSScriptRoot\Invoke-NewLabBaseServerDsc.ps1" -VMName $VMName -VirtualHardDisksPath $VirtualHardDisksPath -WindowsServerIsoPath $WindowsServerIsoPath
 
 $ProgressPreference = "SilentlyContinue"
 
@@ -56,6 +56,6 @@ Configuration "NewLabSqlServerDsc" {
     }
 }
 
-NewLabSqlServerDsc -VMName $VMName -VirtualHardDisksPath $VirtualHardDisksPath -WindowsServerIsoPath $WindowsServerIsoPath -SqlServerIsoPath $SqlServerIsoPath -OutputPath "$env:TEMP/NewLabSqlServerDsc"
+NewLabSqlServerDsc -VMName $VMName -VirtualHardDisksPath $VirtualHardDisksPath -WindowsServerIsoPath $WindowsServerIsoPath -SqlServerIsoPath $SqlServerIsoPath -OutputPath "$env:TEMP\NewLabSqlServerDsc"
 
-Start-DscConfiguration -Path "$env:TEMP/NewLabSqlServerDsc" -Wait -Verbose
+Start-DscConfiguration -Path "$env:TEMP\NewLabSqlServerDsc" -Wait -Verbose

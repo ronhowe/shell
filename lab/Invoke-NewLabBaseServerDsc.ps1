@@ -65,6 +65,6 @@ Configuration "NewLabBaseServerDsc" {
     }
 }
 
-NewLabBaseServerDsc -VMName $VMName -VirtualHardDisksPath $VirtualHardDisksPath -WindowsServerIsoPath $WindowsServerIsoPath -OutputPath "$env:TEMP/NewLabBaseServerDsc"
+NewLabBaseServerDsc -VMName $VMName -VirtualHardDisksPath $VirtualHardDisksPath -WindowsServerIsoPath $WindowsServerIsoPath -OutputPath "$env:TEMP\NewLabBaseServerDsc"
 
-Start-DscConfiguration -Path "$env:TEMP/NewLabBaseServerDsc" -Force -Wait -Verbose
+Start-DscConfiguration -Path "$env:TEMP\NewLabBaseServerDsc" -Force -Wait -Verbose

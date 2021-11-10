@@ -17,7 +17,7 @@ $ConfigData = @{
     AllNodes = @(
         @{
             NodeName        = $ComputerName
-            CertificateFile = "$env:TEMP/DscPublicKey.cer"
+            CertificateFile = "$env:TEMP\DscPublicKey.cer"
             Thumbprint      = "A7FEA9E7E7C55B876FD563B3D4F7DD8EB60B98FF"
         };
     );
@@ -164,8 +164,8 @@ Configuration "ConfigureDomainController" {
     }
 }
 
-ConfigureDomainController -ConfigurationData $ConfigData -Credential $Credential -OutputPath "$env:TEMP/ConfigureDomainController"
+ConfigureDomainController -ConfigurationData $ConfigData -Credential $Credential -OutputPath "$env:TEMP\ConfigureDomainController"
 
 $CimSession = New-CimSession -ComputerName $ComputerName -Credential $Credential
 
-Start-DscConfiguration -CimSession $CimSession -Path "$env:TEMP/ConfigureDomainController" -Wait -Force -Verbose
+Start-DscConfiguration -CimSession $CimSession -Path "$env:TEMP\ConfigureDomainController" -Wait -Force -Verbose

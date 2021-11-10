@@ -2,21 +2,24 @@
 # Set-Location -Path "~"
 # New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
 
-# Add links to this profile from any/all PowerShell hosts (Visual Studio Code, PowerShell, etc.)
-# . "~/repos/ronhowe/powershell/profile.ps1"
+# Add links to this profile from any/all PowerShell hosts. (Visual Studio Code, PowerShell, etc.)
+# . "~\repos\ronhowe\powershell\profile.ps1"
 
 $ProgressPreference = "SilentlyContinue"
 
 . "$PSScriptRoot\Import-Dependencies.ps1"
 . "$PSScriptRoot\Import-Configuration.ps1"
 . "$PSScriptRoot\Import-Secrets.ps1"
+
 Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
-if (Test-Path -Path "~/repos/ronhowe/powershell" -ErrorAction SilentlyContinue) {
-    Set-Location -Path "~/repos/ronhowe/powershell"
+
+if (Test-Path -Path "~\repos\ronhowe\powershell" -ErrorAction SilentlyContinue) {
+    Set-Location -Path "~\repos\ronhowe\powershell"
 }
 else {
     Set-Location -Path "~"
 }
+
 Clear-Host
 
 function about {
@@ -54,12 +57,12 @@ function home {
 
 function junk {
     Clear-Host
-    Push-Location -Path "$env:TEMP/junk"
+    Push-Location -Path "$env:TEMP\junk"
 }
 
 function repos {
     Clear-Host
-    Push-Location -Path "~/repos"
+    Push-Location -Path "~\repos"
 }
 
 function ronhowe {

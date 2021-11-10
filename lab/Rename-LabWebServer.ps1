@@ -1,1 +1,1 @@
-& "$PSScriptRoot/Rename-LabBaseServer.ps1" -VMName "WEB01"
+& "$PSScriptRoot\Rename-LabBaseServer.ps1" -VMName "WEB01"

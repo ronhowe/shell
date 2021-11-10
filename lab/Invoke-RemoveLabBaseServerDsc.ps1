@@ -46,6 +46,6 @@ Configuration "RemoveLabBaseServerDsc" {
     }
 }
 
-RemoveLabBaseServerDsc -VMName $VMName -VirtualHardDisksPath $VirtualHardDisksPath -OutputPath "$env:TEMP/RemoveLabBaseServerDsc"
+RemoveLabBaseServerDsc -VMName $VMName -VirtualHardDisksPath $VirtualHardDisksPath -OutputPath "$env:TEMP\RemoveLabBaseServerDsc"
 
-Start-DscConfiguration -Path "$env:TEMP/RemoveLabBaseServerDsc" -Force -Wait -Verbose
+Start-DscConfiguration -Path "$env:TEMP\RemoveLabBaseServerDsc" -Force -Wait -Verbose

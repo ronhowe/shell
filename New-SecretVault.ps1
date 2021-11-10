@@ -4,7 +4,7 @@
 [CmdletBinding()]
 param()
 
-. "$PSScriptRoot/Import-Configuration.ps1"
+. "$PSScriptRoot\Import-Configuration.ps1"
 
 if (Get-SecretVault -Name $Configuration.SecretVault -ErrorAction SilentlyContinue) {
     Unregister-SecretVault -Name $Configuration.SecretVault
