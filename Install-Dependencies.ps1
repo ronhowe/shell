@@ -1,3 +1,7 @@
+#requires -PSEdition Core
+
+$ProgressPreference = "SilentlyContinue"
+
 @(
     "Az",
     "Microsoft.PowerShell.SecretManagement",

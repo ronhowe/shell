@@ -1,3 +1,5 @@
+#requires -PSEdition Core
+
 @(
     # "Az",
     "Az.Accounts",
