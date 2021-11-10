@@ -1,13 +1,4 @@
 #requires -RunAsAdministrator
 #requires -PSEdition Core
 
-$ArgumentList = @(
-    "-NoLogo",
-    "-NoProfile",
-    "$PSScriptRoot\Invoke-NewLabDomainServerDsc.ps1",
-    "DC01",
-    "'$($Configuration.VirtualHardDisksPath)'",
-    "'$($Configuration.WindowsServerIsoPath)'"
-)
-
-Start-Process -FilePath "powershell.exe" -ArgumentList $ArgumentList -NoNewWindow -Wait
+& "$PSScriptRoot/New-LabBaseServer.ps1" -VMName "DC01" -InvokeDscScriptPath "$PSScriptRoot/Invoke-NewLabDomainServerDsc.ps1"

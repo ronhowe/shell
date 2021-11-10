@@ -1,3 +1,6 @@
-.\Remove-LabDomainServer.ps1
-.\Remove-LabSqlServer.ps1
-.\Remove-LabWebServer.ps1
+#requires -RunAsAdministrator
+#requires -PSEdition Core
+
+& "$PSScriptRoot/Remove-LabDomainServer.ps1"
+& "$PSScriptRoot/Remove-LabSqlServer.ps1"
+& "$PSScriptRoot/Remove-LabWebServer.ps1"

@@ -1,3 +1,6 @@
-.\New-LabDomainServer.ps1
-.\New-LabSqlServer.ps1
-.\New-LabWebServer.ps1
+#requires -RunAsAdministrator
+#requires -PSEdition Core
+
+& "$PSScriptRoot/New-LabDomainServer.ps1"
+& "$PSScriptRoot/New-LabSqlServer.ps1"
+& "$PSScriptRoot/New-LabWebServer.ps1"
