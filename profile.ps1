@@ -7,7 +7,7 @@
 
 $ProgressPreference = "SilentlyContinue"
 
-. "$PSScriptRoot\Import-Dependencies.ps1"
+. "$PSScriptRoot\Import-ModuleDependencies.ps1"
 . "$PSScriptRoot\Import-Configuration.ps1"
 . "$PSScriptRoot\Import-Secrets.ps1"
 
