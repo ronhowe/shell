@@ -7,8 +7,8 @@
 
 $ProgressPreference = "SilentlyContinue"
 
-. "$PSScriptRoot\Import-ModuleDependencies.ps1"
-. "$PSScriptRoot\Import-Configuration.ps1"
+. "$PSScriptRoot\Import-Modules.ps1"
+. "$PSScriptRoot\Import-Configurations.ps1"
 . "$PSScriptRoot\Import-Secrets.ps1"
 
 Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"

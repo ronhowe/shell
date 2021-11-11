@@ -1,9 +1,13 @@
+# Comments and empty lines are supported.
+
 Az
+Az.Tools.Predictor
 dbatools
 Microsoft.PowerShell.SecretManagement
 Microsoft.PowerShell.SecretStore
 oh-my-posh
-Pester
+#Pester
 posh-git
 PowerConfig
+#PSReadLine # Install-Module -Name PSReadLine -AllowPrerelease
 WindowsCompatibility

@@ -1,13 +1,12 @@
 #requires -PSEdition Core
 
-Get-Content -Path "$PSScriptRoot\ModuleDependencies.csv" |
+& "$PSScriptRoot\Get-Modules.ps1" |
 ForEach-Object {
     if ($_ -eq "Az") {
         Write-Output "Importing Module Az.Accounts"
         Import-Module -Name "Az.Accounts"
+        return
     }
-    else {
-        Write-Output "Importing Module $_"
-        Import-Module -Name $_
-    }
+    Write-Output "Importing Module $_"
+    Import-Module -Name $_
 }
