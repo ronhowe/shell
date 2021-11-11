@@ -9,5 +9,4 @@ oh-my-posh
 #Pester
 posh-git
 PowerConfig
-#PSReadLine # Install-Module -Name PSReadLine -AllowPrerelease
 WindowsCompatibility
