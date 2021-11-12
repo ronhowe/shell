@@ -6,7 +6,7 @@ dbatools
 Microsoft.PowerShell.SecretManagement
 Microsoft.PowerShell.SecretStore
 oh-my-posh
-#Pester
+Pester
 posh-git
 PowerConfig
 WindowsCompatibility
