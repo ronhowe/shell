@@ -18,7 +18,7 @@ $ArgumentList = @(
     "-NoProfile",
     $InvokeDscScriptPath,
     $VMName,
-    "'$($Configuration.VirtualHardDisksPath)'"
+    "'$($MyConfiguration.VirtualHardDisksPath)'"
 )
 
 Start-Process -FilePath "powershell.exe" -ArgumentList $ArgumentList -NoNewWindow -Wait

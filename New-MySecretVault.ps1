@@ -4,8 +4,8 @@
 
 . "$PSScriptRoot\Import-MyConfigurations.ps1"
 
-if (Get-SecretVault -Name $Configuration.SecretVaultName -ErrorAction SilentlyContinue) {
-    Unregister-SecretVault -Name $Configuration.SecretVaultName
+if (Get-SecretVault -Name $MyConfiguration.SecretVaultName -ErrorAction SilentlyContinue) {
+    Unregister-SecretVault -Name $MyConfiguration.SecretVaultName
 }
 
 Register-SecretVault -Name $MyConfiguration.SecretVaultName -ModuleName "Microsoft.PowerShell.SecretStore" -DefaultVault
