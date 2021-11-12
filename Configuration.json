@@ -1,7 +1,8 @@
 {
     "Version": "1.0",
-    "SecretVault": "default",
-    "VirtualHardDisksPath": "default",
-    "WindowsServerIsoPath": "default",
-    "SqlServerIsoPath": "default"
+    "SecretVault": "",
+    "VirtualHardDisksPath": "",
+    "WindowsServerIsoPath": "",
+    "SqlServerIsoPath": "",
+    "DscEncryptionCertificateThumbprint": ""
 }

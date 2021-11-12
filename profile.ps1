@@ -1,3 +1,5 @@
+#requires -PSEdition Core
+
 # Create a symbolic link to your repos wherever they live.
 # Set-Location -Path "~"
 # New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
@@ -7,11 +9,15 @@
 
 $ProgressPreference = "SilentlyContinue"
 
-. "$PSScriptRoot\Import-Modules.ps1"
-. "$PSScriptRoot\Import-Configurations.ps1"
-. "$PSScriptRoot\Import-Secrets.ps1"
+Set-PSReadLineOption -PredictionSource History
 
-Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
+. "$PSScriptRoot\Import-MyModules.ps1"
+. "$PSScriptRoot\Import-MyConfigurations.ps1"
+. "$PSScriptRoot\Import-MySecrets.ps1"
+
+if (Test-Path -Path "$PSScriptRoot\ronhowe.omp.json" -ErrorAction SilentlyContinue) {
+    Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
+}
 
 if (Test-Path -Path "~\repos\ronhowe\powershell" -ErrorAction SilentlyContinue) {
     Set-Location -Path "~\repos\ronhowe\powershell"

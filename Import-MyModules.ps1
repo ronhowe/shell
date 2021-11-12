@@ -2,7 +2,7 @@
 
 # Install-Module -Name PSReadLine -AllowPrerelease
 
-& "$PSScriptRoot\Get-Modules.ps1" |
+& "$PSScriptRoot\Get-MyModules.ps1" |
 ForEach-Object {
     if ($_ -eq "Az") {
         Write-Output "Importing Module Az.Accounts"

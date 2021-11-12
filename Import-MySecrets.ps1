@@ -5,7 +5,7 @@
 [CmdletBinding()]
 param()
 
-. "$PSScriptRoot\Import-Configurations.ps1"
+. "$PSScriptRoot\Import-MyConfigurations.ps1"
 
 $AdministratorUsername = "Administrator"
 $AdministratorPassword = Get-Secret -Name "AdministratorPassword" -Vault $Configuration.SecretVault
