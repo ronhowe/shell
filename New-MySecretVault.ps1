@@ -2,16 +2,14 @@
 #requires -Modules "Microsoft.PowerShell.SecretManagement"
 #requires -Modules "Microsoft.PowerShell.SecretStore"
 
-. "$PSScriptRoot\Import-MyConfiguration.ps1"
+. "$PSScriptRoot\Import-MyConfigurations.ps1"
 
-if (Get-SecretVault -Name $Configuration.SecretVault -ErrorAction SilentlyContinue) {
-    Unregister-SecretVault -Name $Configuration.SecretVault
+if (Get-SecretVault -Name $Configuration.SecretVaultName -ErrorAction SilentlyContinue) {
+    Unregister-SecretVault -Name $Configuration.SecretVaultName
 }
 
-Register-SecretVault -Name $Configuration.SecretVault -ModuleName "Microsoft.PowerShell.SecretStore" -DefaultVault
+Register-SecretVault -Name $MyConfiguration.SecretVaultName -ModuleName "Microsoft.PowerShell.SecretStore" -DefaultVault
 
-$AdministratorPassword = Read-Host -Prompt "Administrator Password" -AsSecureString
-Set-Secret -Name "AdministratorPassword" -Vault $Configuration.SecretVault -SecureStringSecret $AdministratorPassword
+Set-Secret -Name $MyConfiguration.VmAdministratorPassword -Vault $MyConfiguration.SecretVaultName -SecureStringSecret (Read-Host -Prompt "Virtual Machine Administrator Password" -AsSecureString)
 
-$CertificatePassword = Read-Host -Prompt "Certificate Password" -AsSecureString
-Set-Secret -Name "CertificatePassword" -Vault $Configuration.SecretVault -SecureStringSecret $CertificatePassword
+# Set-Secret -Name "CertificatePassword" -Vault $MyConfiguration.SecretVaultName -SecureStringSecret $(Read-Host -Prompt "Certificate Password" -AsSecureString)

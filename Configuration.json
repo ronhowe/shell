@@ -1,8 +1,11 @@
 {
     "Version": "1.0",
-    "SecretVault": "",
+    "SecretVaultName": "",
     "VirtualHardDisksPath": "",
     "WindowsServerIsoPath": "",
     "SqlServerIsoPath": "",
-    "DscEncryptionCertificateThumbprint": ""
+    "DscEncryptionCertificateThumbprint": "",
+    "VmAdministratorUsername": "",
+    "VmAdministratorPassword": "",
+    "VmAdministratorCredential": ""
 }

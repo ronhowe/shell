@@ -2,16 +2,9 @@
 #requires -Modules "Microsoft.PowerShell.SecretManagement"
 #requires -Modules "Microsoft.PowerShell.SecretStore"
 
-[CmdletBinding()]
-param()
-
 . "$PSScriptRoot\Import-MyConfigurations.ps1"
 
-$AdministratorUsername = "Administrator"
-$AdministratorPassword = Get-Secret -Name "AdministratorPassword" -Vault $Configuration.SecretVault
-[PSCredential]$AdministratorCredential = New-Object System.Management.Automation.PSCredential ($AdministratorUsername, $AdministratorPassword)
+$MyConfiguration.VmAdministratorPassword = Get-Secret -Name $MyConfiguration.VmAdministratorPassword -Vault $MyConfiguration.SecretVaultName
+$MyConfiguration.VmAdministratorCredential = New-Object System.Management.Automation.PSCredential ($MyConfiguration.VmAdministratorUsername, $MyConfiguration.VmAdministratorPassword)
 
-$CertificatePassword = Get-Secret -Name "CertificatePassword" -Vault $Configuration.SecretVault
-
-# Suppresses PSScriptAnalyzer(PSUseDeclaredVarsMoreThanAssignments).
-@($AdministratorCredential, $CertificatePassword) | Out-Null
+# $CertificatePassword = Get-Secret -Name "CertificatePassword" -Vault $MyConfiguration.SecretVault

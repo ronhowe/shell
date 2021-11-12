@@ -7,12 +7,11 @@ $PowerConfig = New-PowerConfig
 
 $PowerConfig | Add-PowerConfigJsonSource -Path "$PSScriptRoot\Configuration.json" | Out-Null
 
-$UserConfigurationPath = "$PSScriptRoot\Configuration.user.json"
-if (Test-Path -Path $UserConfigurationPath -ErrorAction SilentlyContinue) {
-    $PowerConfig | Add-PowerConfigJsonSource -Path $UserConfigurationPath | Out-Null
+if (Test-Path -Path "$PSScriptRoot\Configuration.user.json" -ErrorAction SilentlyContinue) {
+    $PowerConfig | Add-PowerConfigJsonSource -Path "$PSScriptRoot\Configuration.user.json" | Out-Null
 }
 
-$Configuration = $PowerConfig | Get-PowerConfig
+$MyConfiguration = $PowerConfig | Get-PowerConfig
 
 # Suppresses PSScriptAnalyzer(PSUseDeclaredVarsMoreThanAssignments).
-$Configuration | Out-Null
+$MyConfiguration | Out-Null
