@@ -5,7 +5,7 @@
 
 $Certificate = New-SelfSignedCertificate -Type DocumentEncryptionCertLegacyCsp -DnsName "DscEncryptionCert" -HashAlgorithm SHA256
 
-$Certificate | Export-PfxCertificate -FilePath "$env:TEMP\DscPrivateKey.pfx" -Password $CertificatePassword -Force
+$Certificate | Export-PfxCertificate -FilePath "$env:TEMP\DscPrivateKey.pfx" -Password $MyConfiguration.DscEncryptionCertPfxPassword -Force
 
 $Certificate | Export-Certificate -FilePath "$env:TEMP\DscPublicKey.cer" -Force
 

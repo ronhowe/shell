@@ -7,4 +7,4 @@
 $MyConfiguration.VmAdministratorPassword = Get-Secret -Name $MyConfiguration.VmAdministratorPassword -Vault $MyConfiguration.SecretVaultName
 $MyConfiguration.VmAdministratorCredential = New-Object System.Management.Automation.PSCredential ($MyConfiguration.VmAdministratorUsername, $MyConfiguration.VmAdministratorPassword)
 
-# $CertificatePassword = Get-Secret -Name "CertificatePassword" -Vault $MyConfiguration.SecretVault
+$MyConfiguration.DscEncryptionCertPfxPassword = Get-Secret -Name $MyConfiguration.DscEncryptionCertPfxPassword -Vault $MyConfiguration.SecretVaultName

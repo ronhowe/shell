@@ -12,4 +12,4 @@ Register-SecretVault -Name $MyConfiguration.SecretVaultName -ModuleName "Microso
 
 Set-Secret -Name $MyConfiguration.VmAdministratorPassword -Vault $MyConfiguration.SecretVaultName -SecureStringSecret (Read-Host -Prompt "Virtual Machine Administrator Password" -AsSecureString)
 
-# Set-Secret -Name "CertificatePassword" -Vault $MyConfiguration.SecretVaultName -SecureStringSecret $(Read-Host -Prompt "Certificate Password" -AsSecureString)
+Set-Secret -Name $MyConfiguration.DscEncryptionCertPfxPassword -Vault $MyConfiguration.SecretVaultName -SecureStringSecret $(Read-Host -Prompt "DSC Encryption Certificate PFX Password" -AsSecureString)
