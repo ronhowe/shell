@@ -8,6 +8,6 @@ param(
     $VMName
 )
 
-Invoke-Command -VMName $VMName -Credential $AdministratorCredential -ScriptBlock { Rename-Computer -NewName $using:VMName }
+Invoke-Command -VMName $VMName -Credential $MyConfiguration.VmAdministratorCredential -ScriptBlock { Rename-Computer -NewName $using:VMName }
 
 Restart-VM -Name $VMName -Wait -Force
