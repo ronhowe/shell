@@ -15,7 +15,7 @@ $ProgressPreference = "SilentlyContinue"
 Invoke-Command -ComputerName $ComputerName -Credential $Credential -ScriptBlock {
     $ProgressPreference = "SilentlyContinue"
 
-    Install-PackageProvider -Name "Nuget" -Force
+    Install-PackageProvider -Name "Nuget" -Force | Out-Null
     Install-Module -Name "ActiveDirectoryCSDsc" -Repository "PSGallery" -Force
     Install-Module -Name "ActiveDirectoryDsc" -Repository "PSGallery" -Force
     Install-Module -Name "ComputerManagementDsc" -Repository "PSGallery" -Force
