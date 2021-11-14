@@ -20,7 +20,9 @@ $Username = "Administrator"
 
 $Credential = New-Object System.Management.Automation.PSCredential ($Username, $Password)
 
-$Session = New-PSSession -ComputerName "DC01" -Credential $Credential
+$ComputerName = "DC01"
+
+$Session = New-PSSession -ComputerName $ComputerName -Credential $Credential
 
 Copy-Item -Path "$env:TEMP\DscPrivateKey.pfx" -Destination "C:\DscPrivateKey.pfx" -ToSession $Session
 
@@ -30,10 +32,21 @@ Invoke-Command -Session $Session -ScriptBlock {
 
 $Session | Remove-PSSession
 
+Invoke-Command -ComputerName $ComputerName -Credential $Credential -ScriptBlock {
+    $ProgressPreference = "SilentlyContinue"
+    Install-PackageProvider -Name "Nuget" -Force -Verbose | Out-Null
+    Install-Module -Name "ActiveDirectoryCSDsc" -Repository "PSGallery" -Force -Verbose
+    Install-Module -Name "ActiveDirectoryDsc" -Repository "PSGallery" -Force -Verbose
+    Install-Module -Name "ComputerManagementDsc" -Repository "PSGallery" -Force -Verbose
+    Install-Module -Name "NetworkingDsc" -Repository "PSGallery" -Force -Verbose
+    Install-Module -Name "PSDscResources" -Repository "PSGallery" -Force -Verbose
+    Install-Module -Name "SqlServerDsc" -Repository "PSGallery" -Force -Verbose
+}
+
 SimpleConfiguration -ConfigurationData ".\SimpleConfiguration.psd1" -OutputPath "$env:TEMP\SimpleConfiguration" -Credential $Credential
 
-Set-DscLocalConfigurationManager -ComputerName "DC01" -Credential $Credential -Path "$env:TEMP\SimpleConfiguration"
+Set-DscLocalConfigurationManager -ComputerName $ComputerName -Credential $Credential -Path "$env:TEMP\SimpleConfiguration" -Verbose
 
-Start-DscConfiguration -ComputerName "DC01" -Credential $Credential -Path "$env:TEMP\SimpleConfiguration" -Force -Wait
+Start-DscConfiguration -ComputerName $ComputerName -Credential $Credential -Path "$env:TEMP\SimpleConfiguration" -Force -Wait -Verbose
 
 Pop-Location
