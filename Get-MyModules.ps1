@@ -7,8 +7,8 @@ $MyModules = @(
     "oh-my-posh",
     "Pester",
     "posh-git",
-    "PowerConfig",
-    "WindowsCompatibility"
+    "PowerConfig"
+    # "WindowsCompatibility"
 )
 
 return $MyModules
