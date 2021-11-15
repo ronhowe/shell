@@ -1,22 +1,21 @@
 #requires -RunAsAdministrator
-#requires -PSEdition Core
+#requires -PSEdition Desktop
+
+[CmdletBinding()]
+param(
+)
+
+$ProgressPreference = "SilentlyContinue"
 
 Push-Location -Path $PSScriptRoot
 
-$ScriptBlock = {
-    . ".\HostConfiguration.ps1"
+Write-Verbose "Importing Configuration"
+. ".\HostConfiguration.ps1"
 
-    HostConfiguration -ConfigurationData ".\HostConfiguration.psd1" -OutputPath "$env:TEMP\HostConfiguration"
-    
-    Start-DscConfiguration -Path "$env:TEMP\HostConfiguration" -Force -Wait -Verbose
-}
+Write-Verbose "Compiling Configuration"
+HostConfiguration -ConfigurationData ".\HostConfiguration.psd1" -OutputPath "$env:TEMP\HostConfiguration"
 
-$ArgumentList = @(
-    "-NoLogo",
-    "-NoProfile",
-    $ScriptBlock
-)
-
-Start-Process -FilePath "powershell.exe" -ArgumentList $ArgumentList -NoNewWindow -Wait
+Write-Verbose "Starting Configuration"
+Start-DscConfiguration -Path "$env:TEMP\HostConfiguration" -Force -Wait
 
 Pop-Location
