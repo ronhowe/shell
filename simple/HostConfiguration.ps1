@@ -24,10 +24,11 @@ Configuration HostConfiguration {
                 MinimumMemory               = $Node.MinimumMemory
                 Name                        = $_
                 ProcessorCount              = $Node.ProcessorCount
+                RestartIfNeeded             = $true
                 SwitchName                  = "Default Switch"
                 VhdPath                     = Join-Path -Path $Node.VirtualHardDisksPath -ChildPath "$_.vhdx"
             }
-            xVMDvdDrive "xVMDvdDrive$_" {
+            xVMDvdDrive "xVMDvdDriveWindows$_" {
                 ControllerLocation = 0
                 ControllerNumber   = 1
                 DependsOn          = "[xVMHyperV]xVMHyperV$_"
@@ -35,18 +36,17 @@ Configuration HostConfiguration {
                 Path               = $Node.WindowsServerIsoPath
                 VMName             = $_
             }
+            if ($_ -eq "SQL01") {
+                xVMDvdDrive "xVMDvdDriveSqlServer$_" {
+                    ControllerLocation = 1
+                    ControllerNumber   = 1
+                    DependsOn          = "[xVMHyperV]xVMHyperV$_"
+                    Ensure             = "Present"
+                    Path               = $Node.SqlServerIsoPath
+                    VMName             = $_
+                }
+            }
         }
         #endregion All Nodes
-
-        #region SQL Server Node
-        xVMDvdDrive "xVMDvdDrive$_" {
-            ControllerLocation = 1
-            ControllerNumber   = 1
-            DependsOn          = "[xVMHyperV]xVMHyperVSQL01"
-            Ensure             = "Present"
-            Path               = $Node.SqlServerIsoPath
-            VMName             = "SQL01"
-        }
-        #endregion SQL Server Node
     }
 }

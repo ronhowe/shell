@@ -11,6 +11,12 @@ $ScriptBlock = {
     Start-DscConfiguration -Path "$env:TEMP\HostConfiguration" -Force -Wait -Verbose
 }
 
-Start-Process -FilePath "powershell.exe" -ArgumentList @("-NoLogo", "-NoProfile", $ScriptBlock) -NoNewWindow -Wait
+$ArgumentList = @(
+    "-NoLogo",
+    "-NoProfile",
+    $ScriptBlock
+)
+
+Start-Process -FilePath "powershell.exe" -ArgumentList $ArgumentList -NoNewWindow -Wait
 
 Pop-Location
