@@ -2,7 +2,7 @@
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory = $true)]
+    [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
     [ValidateNotNullorEmpty()]
     [string[]]
     $ComputerName,
@@ -24,11 +24,13 @@ begin {
     GuestConfiguration -ConfigurationData ".\GuestConfiguration.psd1" -OutputPath "$env:TEMP\GuestConfiguration" -Credential $Credential
 }
 process {
-    Write-Verbose "Setting Local Configuration Manager"
-    Set-DscLocalConfigurationManager -ComputerName $ComputerName -Credential $Credential -Path "$env:TEMP\GuestConfiguration"
+    foreach ($Computer in $ComputerName) {
+        Write-Verbose "Setting Local Configuration Manager"
+        Set-DscLocalConfigurationManager -ComputerName $ComputerName -Credential $Credential -Path "$env:TEMP\GuestConfiguration"
 
-    Write-Verbose "Starting Configuration"
-    Start-DscConfiguration -ComputerName $ComputerName -Credential $Credential -Path "$env:TEMP\GuestConfiguration" -Force -Wait
+        Write-Verbose "Starting Configuration"
+        Start-DscConfiguration -ComputerName $ComputerName -Credential $Credential -Path "$env:TEMP\GuestConfiguration" -Force -Wait
+    }
 }
 end {
     Pop-Location

@@ -27,7 +27,7 @@ Configuration GuestConfiguration {
             RebootNodeIfNeeded = $Node.RebootNodeIfNeeded
         }
         Computer NewName {
-            Name = $AllNodes.NodeName
+            Name = $Node.NodeName
         }
         TimeZone TimeZoneExample {
             IsSingleInstance = "Yes"
@@ -37,11 +37,6 @@ Configuration GuestConfiguration {
             AddressFamily  = "IPv4"
             Dhcp           = "Disabled"
             InterfaceAlias = "Ethernet"
-        }
-        IPAddress NewIPv4Address {
-            AddressFamily  = "IPV4"
-            InterfaceAlias = "Ethernet"
-            IPAddress      = $Node.IPAddress
         }
         NetConnectionProfile SetPrivate {
             InterfaceAlias  = "Ethernet"
@@ -57,6 +52,11 @@ Configuration GuestConfiguration {
 
     #region Domain Server
     Node "DC01" {
+        IPAddress NewIPv4Address {
+            AddressFamily  = "IPV4"
+            InterfaceAlias = "Ethernet"
+            IPAddress      = $Node.IPAddress
+        }
         DnsServerAddress PrimaryAndSecondary {
             Address        = $Node.PrimaryDnsIPAddress, $Node.GatewayIPAddress
             AddressFamily  = "IPv4"

@@ -38,12 +38,12 @@ process {
     Invoke-Command -ComputerName $ComputerName -Credential $Credential -ScriptBlock {
         $ProgressPreference = "SilentlyContinue"
         Install-PackageProvider -Name "Nuget" -Force -Verbose | Out-Null
-        Install-Module -Name "ActiveDirectoryCSDsc" -Repository "PSGallery" -Force -Verbose
-        Install-Module -Name "ActiveDirectoryDsc" -Repository "PSGallery" -Force -Verbose
-        Install-Module -Name "ComputerManagementDsc" -Repository "PSGallery" -Force -Verbose
-        Install-Module -Name "NetworkingDsc" -Repository "PSGallery" -Force -Verbose
-        Install-Module -Name "PSDscResources" -Repository "PSGallery" -Force -Verbose
-        Install-Module -Name "SqlServerDsc" -Repository "PSGallery" -Force -Verbose
+        Install-Module -Name "ActiveDirectoryCSDsc" -Repository "PSGallery" -Force
+        Install-Module -Name "ActiveDirectoryDsc" -Repository "PSGallery" -Force
+        Install-Module -Name "ComputerManagementDsc" -Repository "PSGallery" -Force
+        Install-Module -Name "NetworkingDsc" -Repository "PSGallery" -Force
+        Install-Module -Name "PSDscResources" -Repository "PSGallery" -Force
+        Install-Module -Name "SqlServerDsc" -Repository "PSGallery" -Force
     }
 
     Write-Verbose "Removing PSSession"
