@@ -38,10 +38,11 @@ Configuration GuestConfiguration {
             Dhcp           = "Disabled"
             InterfaceAlias = "Ethernet"
         }
-        NetConnectionProfile SetPrivate {
-            InterfaceAlias  = "Ethernet"
-            NetworkCategory = "Private"
-        }
+        # Works on first try, but fails after domain join.
+        # NetConnectionProfile SetPrivate {
+        #     InterfaceAlias  = "Ethernet"
+        #     NetworkCategory = "Private"
+        # }
         IPAddress NewIPv4Address {
             AddressFamily  = "IPV4"
             InterfaceAlias = "Ethernet"
