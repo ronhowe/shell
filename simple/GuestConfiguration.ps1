@@ -17,17 +17,17 @@ Configuration GuestConfiguration {
     Import-DscResource -ModuleName "SqlServerDsc"
     #endregion DSC Resources
 
+    $DomainCredential = New-Object System.Management.Automation.PSCredential ($("{0}\{1}" -f $Node.DomainName, $Credential.UserName), $Credential.Password)
+
+
     #region All Nodes
     Node $AllNodes.NodeName {
         # https://docs.microsoft.com/en-us/powershell/scripting/dsc/managing-nodes/metaConfig?view=powershell-7.2
         LocalConfigurationManager {
             ActionAfterReboot  = $Node.ActionAfterReboot
-            CertificateId      = $Node.Thumbprint
+            CertificateId      = $Node.CertificateId
             ConfigurationMode  = $Node.ConfigurationMode
             RebootNodeIfNeeded = $Node.RebootNodeIfNeeded
-        }
-        Computer NewName {
-            Name = $Node.NodeName
         }
         TimeZone TimeZoneExample {
             IsSingleInstance = "Yes"
@@ -42,27 +42,52 @@ Configuration GuestConfiguration {
             InterfaceAlias  = "Ethernet"
             NetworkCategory = "Private"
         }
+        IPAddress NewIPv4Address {
+            AddressFamily  = "IPV4"
+            InterfaceAlias = "Ethernet"
+            IPAddress      = $Node.IPAddress
+        }
         DefaultGatewayAddress SetDefaultGateway {
             Address        = $Node.GatewayIPAddress
             AddressFamily  = "IPv4"
             InterfaceAlias = "Ethernet"
+        }
+        if ($Node.NodeName -eq "DC01") {
+            Computer NewName {
+                Name = $Node.NodeName
+            }
+            DnsServerAddress PrimaryAndSecondary {
+                Address        = $Node.PrimaryDnsIPAddress, $Node.GatewayIPAddress
+                AddressFamily  = "IPv4"
+                InterfaceAlias = "Ethernet"
+                Validate       = $false
+            }
+        }
+        else {
+            DnsServerAddress PrimaryAndSecondary {
+                Address        = $Node.PrimaryDnsIPAddress
+                AddressFamily  = "IPv4"
+                InterfaceAlias = "Ethernet"
+                Validate       = $false
+            }
+            WaitForADDomain "WaitForActiveDirectory" {
+                Credential   = $Credential
+                DomainName   = $Node.DomainName
+                RestartCount = $Node.RestartCount
+                WaitTimeout  = $Node.WaitTimeout
+            }
+            Computer "JoinDomain" {
+                Credential = $DomainCredential
+                DependsOn  = "[WaitForADDomain]WaitForActiveDirectory"
+                DomainName = $Node.DomainName
+                Name       = $Node.NodeName
+            }
         }
     }
     #endregion All Nodes
 
     #region Domain Server
     Node "DC01" {
-        IPAddress NewIPv4Address {
-            AddressFamily  = "IPV4"
-            InterfaceAlias = "Ethernet"
-            IPAddress      = $Node.IPAddress
-        }
-        DnsServerAddress PrimaryAndSecondary {
-            Address        = $Node.PrimaryDnsIPAddress, $Node.GatewayIPAddress
-            AddressFamily  = "IPv4"
-            InterfaceAlias = "Ethernet"
-            Validate       = $false
-        }
         WindowsFeature "InstallActiveDirectoryServices" {
             Ensure = "Present"
             Name   = "AD-Domain-Services"
@@ -93,7 +118,7 @@ Configuration GuestConfiguration {
             Credential   = $Credential
             DomainName   = $Node.DomainName
             RestartCount = $Node.RestartCount
-            WaitTimeout  = $Node.RestartCount
+            WaitTimeout  = $Node.WaitTimeout
         }
         ADOptionalFeature "EnableActiveDirectoryRecycleBin" {
             DependsOn                         = "[WaitForADDomain]WaitForActiveDirectory"
@@ -101,6 +126,7 @@ Configuration GuestConfiguration {
             FeatureName                       = "Recycle Bin Feature"
             ForestFQDN                        = $Node.DomainName
         }
+        #region Active Directory Certificate Services
         # WindowsFeature "InstallActiveDirectoryCertificateServices" {
         #     Name      = @("AD-Certificate", "ADCS-Cert-Authority", "ADCS-Web-Enrollment", "ADCS-Enroll-Web-Pol", "ADCS-Enroll-Web-Svc", "RSAT-ADCS", "RSAT-ADCS-Mgmt")
         #     Ensure    = "Present"
@@ -119,17 +145,22 @@ Configuration GuestConfiguration {
         #     Ensure           = "Present"
         #     DependsOn        = "[AdcsCertificationAuthority]ConfigureADCSCertificationAuthority"
         # }
+        #endregion Active Directory Certificate Services
     }
     #endregion Domain Server
 
     #region SQL Server
     Node "SQL01" {
+        # https://github.com/dsccommunity/SqlServerDsc/wiki/SqlSetup
         SqlSetup "InstallSqlServer" {
-            # DependsOn           = "[WindowsFeature]NetFramework45"
-            Features            = $Node.Features
-            InstanceName        = $Node.InstanceName
-            SourcePath          = $Node.SourePath
-            SQLSysAdminAccounts = $Node.SQLSysAdminAccounts
+            DependsOn            = "[Computer]JoinDomain"
+            Features             = $Node.Features
+            ForceReboot          = $true
+            InstanceName         = $Node.InstanceName
+            PsDscRunAsCredential = $Credential
+            SourcePath           = $Node.SourePath
+            SQLSysAdminAccounts  = $Node.SQLSysAdminAccounts
+            UpdateEnabled        = $true
         }
     }
     #endregion SQL Server

@@ -26,10 +26,10 @@ begin {
 process {
     foreach ($Computer in $ComputerName) {
         Write-Verbose "Setting Local Configuration Manager"
-        Set-DscLocalConfigurationManager -ComputerName $ComputerName -Credential $Credential -Path "$env:TEMP\GuestConfiguration"
+        Set-DscLocalConfigurationManager -ComputerName $Computer -Credential $Credential -Path "$env:TEMP\GuestConfiguration"
 
         Write-Verbose "Starting Configuration"
-        Start-DscConfiguration -ComputerName $ComputerName -Credential $Credential -Path "$env:TEMP\GuestConfiguration" -Force -Wait
+        Start-DscConfiguration -ComputerName $Computer -Credential $Credential -Path "$env:TEMP\GuestConfiguration" -Force -Wait
     }
 }
 end {
