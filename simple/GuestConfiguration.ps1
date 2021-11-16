@@ -158,7 +158,7 @@ Configuration GuestConfiguration {
             ForceReboot          = $true
             InstanceName         = $Node.InstanceName
             PsDscRunAsCredential = $Credential
-            SourcePath           = $Node.SourePath
+            SourcePath           = $Node.SourcePath
             SQLSysAdminAccounts  = $Node.SQLSysAdminAccounts
             UpdateEnabled        = $true
         }
