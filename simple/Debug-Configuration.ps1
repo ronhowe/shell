@@ -4,7 +4,10 @@ Set-Location -Path "~\repos\ronhowe\powershell\simple"
 
 $Credential = Get-Credential -Message "Administrator Credential" -Username "Administrator"
 
-.\Invoke-HostConfiguration.ps1 -Verbose
+.\Invoke-HostConfiguration.ps1 -Ensure "Present" -Verbose
+<#
+.\Invoke-HostConfiguration.ps1 -Ensure "Absent" -Verbose
+#>
 
 Write-Host "Complete OOBE Setup"
 

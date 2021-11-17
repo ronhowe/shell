@@ -3,6 +3,10 @@
 
 [CmdletBinding()]
 param(
+    [Parameter(Mandatory = $true)]
+    [ValidateSet("Present", "Absent")]
+    [string]
+    $Ensure
 )
 
 $ProgressPreference = "SilentlyContinue"
@@ -13,7 +17,7 @@ Write-Verbose "Importing Configuration"
 . ".\HostConfiguration.ps1"
 
 Write-Verbose "Compiling Configuration"
-HostConfiguration -ConfigurationData ".\HostConfiguration.psd1" -OutputPath "$env:TEMP\HostConfiguration"
+HostConfiguration -ConfigurationData ".\HostConfiguration.psd1" -Ensure $Ensure -OutputPath "$env:TEMP\HostConfiguration"
 
 Write-Verbose "Starting Configuration"
 Start-DscConfiguration -Path "$env:TEMP\HostConfiguration" -Force -Wait

@@ -1,3 +1,5 @@
+#requires -PSEdition Desktop
+
 Install-Module -Name "ActiveDirectoryCSDsc" -Scope CurrentUser -Repository "PSGallery" -Force
 Install-Module -Name "ActiveDirectoryDsc" -Scope CurrentUser -Repository "PSGallery" -Force
 Install-Module -Name "ComputerManagementDsc" -Scope CurrentUser -Repository "PSGallery" -Force
