@@ -17,8 +17,47 @@ Configuration GuestConfiguration {
     Import-DscResource -ModuleName "SqlServerDsc"
     #endregion DSC Resources
 
-    $DomainCredential = New-Object System.Management.Automation.PSCredential ($("{0}\{1}" -f $Node.DomainName, $Credential.UserName), $Credential.Password)
+    #region Helpers
+    function Get-NodeGatewayIpAddress {
+        return Get-NetIPConfiguration -InterfaceAlias "vEthernet (Default Switch)" | Select-Object -ExpandProperty "IPv4Address" | Select-Object -ExpandProperty "IPAddress"
+    }
+    
+    function Get-NodeIpAddress {
+        param(
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullorEmpty()]
+            [string]
+            $NodeName,
+    
+            [Parameter(Mandatory = $false)]
+            [int]
+            $Subnet
+        )
+    
+        $IpAddress = $(Get-NodeGatewayIpAddress).Split(".")
 
+        $IpAddress[-1] = switch ($NodeName) {
+            "DC01" {
+                10
+            }
+            "SQL01" {
+                20
+            }
+            "WEB01" {
+                30
+            }
+        }
+
+        if ($Subnet) {
+            return "{0}/{1}" -f ($IpAddress -join "."), $Subnet
+        }
+        else {
+            return $IpAddress -join "."
+        }
+    }
+    
+    $DomainCredential = New-Object System.Management.Automation.PSCredential ($("{0}\{1}" -f $Node.DomainName, $Credential.UserName), $Credential.Password)
+    #endregion Helpers
 
     #region All Nodes
     Node $AllNodes.NodeName {
@@ -29,44 +68,39 @@ Configuration GuestConfiguration {
             ConfigurationMode  = $Node.ConfigurationMode
             RebootNodeIfNeeded = $Node.RebootNodeIfNeeded
         }
-        TimeZone TimeZoneExample {
+        TimeZone "SetTimeZone" {
             IsSingleInstance = "Yes"
             TimeZone         = $Node.TimeZone
         }
-        NetIPInterface DisableDhcp {
+        NetIPInterface "DisableDhcp" {
             AddressFamily  = "IPv4"
             Dhcp           = "Disabled"
             InterfaceAlias = "Ethernet"
         }
-        # Works on first try, but fails after domain join.
-        # NetConnectionProfile SetPrivate {
-        #     InterfaceAlias  = "Ethernet"
-        #     NetworkCategory = "Private"
-        # }
-        IPAddress NewIPv4Address {
+        IPAddress "SetIPAddress" {
             AddressFamily  = "IPV4"
             InterfaceAlias = "Ethernet"
-            IPAddress      = $Node.IPAddress
+            IPAddress      = Get-NodeIpAddress -NodeName $Node.NodeName -Subnet $Node.Subnet
         }
-        DefaultGatewayAddress SetDefaultGateway {
-            Address        = $Node.GatewayIPAddress
+        DefaultGatewayAddress "SetDefaultGatewayIpAddress" {
+            Address        = Get-NodeGatewayIpAddress
             AddressFamily  = "IPv4"
             InterfaceAlias = "Ethernet"
         }
         if ($Node.NodeName -eq "DC01") {
-            Computer NewName {
+            Computer "RenameComputer" {
                 Name = $Node.NodeName
             }
-            DnsServerAddress PrimaryAndSecondary {
-                Address        = $Node.PrimaryDnsIPAddress, $Node.GatewayIPAddress
+            DnsServerAddress "SetDnsServerIpAddress" {
+                Address        = Get-NodeGatewayIpAddress
                 AddressFamily  = "IPv4"
                 InterfaceAlias = "Ethernet"
                 Validate       = $false
             }
         }
         else {
-            DnsServerAddress PrimaryAndSecondary {
-                Address        = $Node.PrimaryDnsIPAddress
+            DnsServerAddress "ConfigureDns" {
+                Address        = Get-NodeIpAddress -NodeName "DC01"
                 AddressFamily  = "IPv4"
                 InterfaceAlias = "Ethernet"
                 Validate       = $false
@@ -83,6 +117,28 @@ Configuration GuestConfiguration {
                 DomainName = $Node.DomainName
                 Name       = $Node.NodeName
             }
+        }
+        Service "SetNetworkResourceDiscovery" {
+            Name        = "FDResPub"
+            StartupType = "Automatic"
+            State       = "Running"
+        }
+        RemoteDesktopAdmin "SetRemoteDesktopSettings" {
+            Ensure             = "Present"
+            IsSingleInstance   = "Yes"
+            UserAuthentication = "NonSecure"
+        }
+        Firewall "AllowRdpInbound" {
+            Enabled = $true
+            Ensure  = "Present"
+            Name    = "RemoteDesktop-UserMode-In-TCP"
+            Profile = @("Domain", "Private")
+        }
+        Registry "EnableRemoteDesktop" {
+            Ensure    = "Present"
+            Key       = "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server"
+            ValueData = "0"
+            ValueName = "fdenyTSConnections"
         }
     }
     #endregion All Nodes
@@ -107,7 +163,7 @@ Configuration GuestConfiguration {
             SafemodeAdministratorPassword = $Credential
             SysvolPath                    = $Node.SysvolPath
         }
-        PendingReboot RebootAfterConfigureActiveDirectory {
+        PendingReboot "RebootAfterConfigureActiveDirectory" {
             DependsOn                   = "[ADDomain]ConfigureActiveDirectory"
             Name                        = "RebootAfterConfigureActiveDirectory"
             SkipCcmClientSDK            = $Node.SkipCcmClientSDK
@@ -159,9 +215,19 @@ Configuration GuestConfiguration {
             ForceReboot          = $true
             InstanceName         = $Node.InstanceName
             PsDscRunAsCredential = $Credential
+            SAPwd                = $Credential
+            SecurityMode         = "SQL"
             SourcePath           = $Node.SourcePath
             SQLSysAdminAccounts  = $Node.SQLSysAdminAccounts
             UpdateEnabled        = $true
+        }
+        SqlWindowsFirewall "ConfigureSqlServerFirewall" {
+            Ensure               = "Present"
+            Features             = $Node.Features
+            InstanceName         = $Node.InstanceName
+            SourcePath           = $Node.SourcePath
+            SourceCredential     = $Credential
+            PsDscRunAsCredential = $Credential
         }
     }
     #endregion SQL Server
