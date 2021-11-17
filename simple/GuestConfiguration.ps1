@@ -1,5 +1,12 @@
 #requires -PSEdition Desktop
 
+#region Online Documentation
+# https://docs.microsoft.com/en-us/powershell/scripting/dsc/managing-nodes/metaConfig?view=powershell-7.2
+# https://github.com/dsccommunity/ActiveDirectoryDsc/wiki
+# https://github.com/dsccommunity/NetworkingDsc/wiki
+# https://github.com/dsccommunity/SqlServerDsc/wiki
+#endregion Online Documentation
+
 Configuration GuestConfiguration {
     param(
         [Parameter(Mandatory = $true)]
@@ -61,12 +68,16 @@ Configuration GuestConfiguration {
 
     #region All Nodes
     Node $AllNodes.NodeName {
-        # https://docs.microsoft.com/en-us/powershell/scripting/dsc/managing-nodes/metaConfig?view=powershell-7.2
         LocalConfigurationManager {
             ActionAfterReboot  = $Node.ActionAfterReboot
             CertificateId      = $Node.CertificateId
             ConfigurationMode  = $Node.ConfigurationMode
             RebootNodeIfNeeded = $Node.RebootNodeIfNeeded
+        }
+        File "DeleteDscEncryptionPfx" {
+            DestinationPath = "C:\DscPrivateKey.pfx"
+            Ensure          = "Absent"
+            Type            = "File"
         }
         TimeZone "SetTimeZone" {
             IsSingleInstance = "Yes"
@@ -118,21 +129,24 @@ Configuration GuestConfiguration {
                 Name       = $Node.NodeName
             }
         }
-        Service "SetNetworkResourceDiscovery" {
-            Name        = "FDResPub"
-            StartupType = "Automatic"
-            State       = "Running"
-        }
         RemoteDesktopAdmin "SetRemoteDesktopSettings" {
             Ensure             = "Present"
             IsSingleInstance   = "Yes"
             UserAuthentication = "NonSecure"
         }
-        Firewall "AllowRdpInbound" {
-            Enabled = $true
-            Ensure  = "Present"
-            Name    = "RemoteDesktop-UserMode-In-TCP"
-            Profile = @("Domain", "Private")
+        Service "SetNetworkResourceDiscovery" {
+            Name        = "FDResPub"
+            StartupType = "Automatic"
+            State       = "Running"
+        }
+        $Node.FirewallRules | ConvertFrom-Csv | ForEach-Object {
+            Firewall "SetFirewallRule$($_.Name)" {
+                Action  = "Allow"
+                Enabled = $true
+                Ensure  = "Present"
+                Name    = $_.Name
+                Profile = @("Domain", "Private")
+            }
         }
         Registry "EnableRemoteDesktop" {
             Ensure    = "Present"
@@ -234,6 +248,10 @@ Configuration GuestConfiguration {
     
     #region Web Server
     Node "WEB01" {
+        WindowsFeature InstallWebServer {
+            Ensure = "Present"
+            Name   = "Web-Server" 
+        }
     }
     #endregion Web Server
 }
