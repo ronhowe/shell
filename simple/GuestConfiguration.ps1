@@ -233,15 +233,14 @@ Configuration GuestConfiguration {
             SecurityMode         = "SQL"
             SourcePath           = $Node.SourcePath
             SQLSysAdminAccounts  = $Node.SQLSysAdminAccounts
+            TcpEnabled           = $true
             UpdateEnabled        = $true
         }
         SqlWindowsFirewall "ConfigureSqlServerFirewall" {
-            Ensure               = "Present"
-            Features             = $Node.Features
-            InstanceName         = $Node.InstanceName
-            SourcePath           = $Node.SourcePath
-            SourceCredential     = $Credential
-            PsDscRunAsCredential = $Credential
+            Ensure       = "Present"
+            Features     = $Node.Features
+            InstanceName = $Node.InstanceName
+            SourcePath   = $Node.SourcePath
         }
     }
     #endregion SQL Server
