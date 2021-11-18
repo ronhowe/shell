@@ -12,6 +12,15 @@ Configuration HostConfiguration {
     Import-DscResource -ModuleName "xHyper-V"
     #endregion DSC Resources
 
+    #region Helpers
+    if ($Ensure -eq "Present") {
+        $State = "Running"
+    }
+    else {
+        $State = "Off"
+    }
+    #endregion Helpers
+
     Node "localhost" {
         #region All Nodes
         @("DC01", "SQL01", "WEB01") | ForEach-Object {
@@ -31,6 +40,7 @@ Configuration HostConfiguration {
                 Name                        = $_
                 ProcessorCount              = $Node.ProcessorCount
                 RestartIfNeeded             = $true
+                State                       = $State
                 SwitchName                  = "Default Switch"
                 VhdPath                     = Join-Path -Path $Node.VirtualHardDisksPath -ChildPath "$_.vhdx"
             }

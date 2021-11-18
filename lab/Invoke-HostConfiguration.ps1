@@ -20,6 +20,6 @@ Write-Verbose "Compiling Configuration"
 HostConfiguration -ConfigurationData ".\HostConfiguration.psd1" -Ensure $Ensure -OutputPath "$env:TEMP\HostConfiguration"
 
 Write-Verbose "Starting Configuration"
-Start-DscConfiguration -Path "$env:TEMP\HostConfiguration" -Force -Wait
+Start-DscConfiguration -Path "$env:TEMP\HostConfiguration" -Force
 
 Pop-Location
