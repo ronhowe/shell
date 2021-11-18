@@ -72,9 +72,10 @@ Invoke-Pester -Script .\Test-Configurations.ps1 -Output Detailed
 #endregion Test Configurations
 
 #region Get DSC Status
-Invoke-Command -ComputerName @("DC01", "SQL01", "WEB01") -Credential $Credential -ScriptBlock {
-    return New-Object -TypeName PSObject -Property  @{ ComputerName = $env:COMPUTERNAME; Status = (Get-DscConfigurationStatus -ErrorAction SilentlyContinue).Status }
-}
+$ScriptBlock = { return New-Object -TypeName PSObject -Property  @{ Status = (Get-DscConfigurationStatus -ErrorAction SilentlyContinue).Status } }
+Invoke-Command -ComputerName @("DC01", "SQL01", "WEB01") -Credential $Credential -ScriptBlock $ScriptBlock -ErrorAction SilentlyContinue |
+Sort-Object -Property "PSComputerName" |
+Format-Table -AutoSize
 #endregion Get DSC Status
 
 #region Stop VM
