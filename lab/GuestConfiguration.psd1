@@ -42,6 +42,7 @@ RemoteDesktop-UserMode-In-TCP
             DatabasePath                = "C:\Windows\NTDS"
             LogPath                     = "C:\Windows\NTDS"
             NodeName                    = "DC01"
+            Sku                         = "Core"
             SkipCcmClientSDK            = $true
             SkipComponentBasedServicing = $true
             SkipPendingFileRename       = $true
@@ -52,11 +53,13 @@ RemoteDesktop-UserMode-In-TCP
             Features            = "SQLENGINE"
             InstanceName        = "MSSQLSERVER"
             NodeName            = "SQL01"
+            Sku                 = "Core"
             SourcePath          = "E:\"
             SQLSysAdminAccounts = @("Administrators")
         };
         @{
             NodeName = "WEB01"
+            Sku      = "Core"
         };
     );
 }

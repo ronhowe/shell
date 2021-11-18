@@ -110,7 +110,7 @@ Configuration GuestConfiguration {
             }
         }
         else {
-            DnsServerAddress "ConfigureDns" {
+            DnsServerAddress "SetDnsServerIpAddress" {
                 Address        = Get-NodeIpAddress -NodeName "DC01"
                 AddressFamily  = "IPv4"
                 InterfaceAlias = "Ethernet"
@@ -134,12 +134,13 @@ Configuration GuestConfiguration {
             IsSingleInstance   = "Yes"
             UserAuthentication = "NonSecure"
         }
-        # Only available with Desktop Experience.
-        # Service "SetNetworkResourceDiscovery" {
-        #     Name        = "FDResPub"
-        #     StartupType = "Automatic"
-        #     State       = "Running"
-        # }
+        if ($Node.Sku -eq "Desktop") {
+            Service "SetNetworkResourceDiscovery" {
+                Name        = "FDResPub"
+                StartupType = "Automatic"
+                State       = "Running"
+            }
+        }
         $Node.FirewallRules | ConvertFrom-Csv | ForEach-Object {
             Firewall "SetFirewallRule$($_.Name)" {
                 Action  = "Allow"
@@ -164,10 +165,12 @@ Configuration GuestConfiguration {
             Ensure = "Present"
             Name   = "AD-Domain-Services"
         }
-        WindowsFeature "InstallActiveDirectoryTools" {
-            DependsOn = "[WindowsFeature]InstallActiveDirectoryServices"
-            Ensure    = "Present"
-            Name      = "RSAT-ADDS"
+        if ($Node.Sku -eq "Desktop") {
+            WindowsFeature "InstallActiveDirectoryTools" {
+                DependsOn = "[WindowsFeature]InstallActiveDirectoryServices"
+                Ensure    = "Present"
+                Name      = "RSAT-ADDS"
+            }
         }
         ADDomain "ConfigureActiveDirectory" {
             Credential                    = $Credential
@@ -237,7 +240,7 @@ Configuration GuestConfiguration {
             TcpEnabled           = $true
             UpdateEnabled        = $true
         }
-        SqlWindowsFirewall "ConfigureSqlServerFirewall" {
+        SqlWindowsFirewall "SetSqlServerFirewall" {
             DependsOn    = "[SqlSetup]InstallSqlServer"
             Ensure       = "Present"
             Features     = $Node.Features
@@ -249,7 +252,7 @@ Configuration GuestConfiguration {
     
     #region Web Server
     Node "WEB01" {
-        WindowsFeature InstallWebServer {
+        WindowsFeature "InstallWebServer" {
             Ensure = "Present"
             Name   = "Web-Server" 
         }
