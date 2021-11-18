@@ -134,11 +134,12 @@ Configuration GuestConfiguration {
             IsSingleInstance   = "Yes"
             UserAuthentication = "NonSecure"
         }
-        Service "SetNetworkResourceDiscovery" {
-            Name        = "FDResPub"
-            StartupType = "Automatic"
-            State       = "Running"
-        }
+        # Only available with Desktop Experience.
+        # Service "SetNetworkResourceDiscovery" {
+        #     Name        = "FDResPub"
+        #     StartupType = "Automatic"
+        #     State       = "Running"
+        # }
         $Node.FirewallRules | ConvertFrom-Csv | ForEach-Object {
             Firewall "SetFirewallRule$($_.Name)" {
                 Action  = "Allow"

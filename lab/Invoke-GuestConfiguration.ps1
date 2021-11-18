@@ -29,7 +29,7 @@ process {
         Set-DscLocalConfigurationManager -ComputerName $Computer -Credential $Credential -Path "$env:TEMP\GuestConfiguration"
 
         Write-Verbose "Starting Configuration"
-        Start-DscConfiguration -ComputerName $Computer -Credential $Credential -Path "$env:TEMP\GuestConfiguration" -Force
+        Start-DscConfiguration -ComputerName $Computer -Credential $Credential -Path "$env:TEMP\GuestConfiguration" -Force -Wait
     }
 }
 end {

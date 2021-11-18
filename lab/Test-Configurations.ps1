@@ -9,8 +9,8 @@ $TestCases = @(
 )
 
 Describe "Hyper-V" {
-    Context "State" {
-        It "<ComputerName>" -TestCases $TestCases {
+    Context "VM State" {
+        It "<ComputerName> Is Running" -TestCases $TestCases {
             param (
                 $ComputerName
             )
@@ -21,7 +21,7 @@ Describe "Hyper-V" {
 
 Describe "Networking" {
     Context "Firewall" {
-        It "Ping <ComputerName>" -TestCases $TestCases {
+        It "<ComputerName> Can Be Pinged" -TestCases $TestCases {
             param (
                 $ComputerName
             )
@@ -31,16 +31,16 @@ Describe "Networking" {
 }
 
 Describe "SQL Server" {
-    Context "Connections" {
-        It "Connected" {
+    Context "Endpoint" {
+        It "SQL01 SQL Port Open" {
             (Test-NetConnection -ComputerName "SQL01" -Port 1433 -WarningAction SilentlyContinue).TcpTestSucceeded | Should -BeTrue
         }
     }
 }
 
 Describe "Web Server" {
-    Context "Connections" {
-        It "Connected" {
+    Context "Endpoint" {
+        It "WEB01 HTTP Port Open" {
             (Test-NetConnection -ComputerName "WEB01" -Port 80 -WarningAction SilentlyContinue).TcpTestSucceeded | Should -BeTrue
         }
     }
