@@ -238,6 +238,7 @@ Configuration GuestConfiguration {
             UpdateEnabled        = $true
         }
         SqlWindowsFirewall "ConfigureSqlServerFirewall" {
+            DependsOn    = "[SqlSetup]InstallSqlServer"
             Ensure       = "Present"
             Features     = $Node.Features
             InstanceName = $Node.InstanceName

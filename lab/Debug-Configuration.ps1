@@ -17,9 +17,12 @@ $ComputerNames = @("DC01", "SQL01", "WEB01")
 .\Invoke-HostConfiguration.ps1 -Ensure "Present" -Verbose
 #endregion Create VM
 
-#region Delete VM
-.\Invoke-HostConfiguration.ps1 -Ensure "Absent" -Verbose
-#endregion Delete VM
+#region Start VM
+# Start-VM -Name "DC01" -Verbose
+# Start-VM -Name "SQL01" -Verbose
+# Start-VM -Name "WEB01" -Verbose
+$ComputerNames | Start-VM -Verbose
+#endregion Start VM
 
 #region Connect VM
 # Start-Process -FilePath "vmconnect.exe" -ArgumentList @("localhost", "DC01")
@@ -28,13 +31,6 @@ $ComputerNames = @("DC01", "SQL01", "WEB01")
 $ComputerNames | ForEach-Object { Start-Process -FilePath "vmconnect.exe" -ArgumentList @("localhost", $_) }
 #endregion Connect VM
 
-#region Start VM
-# Start-VM -Name "DC01" -Verbose
-# Start-VM -Name "SQL01" -Verbose
-# Start-VM -Name "WEB01" -Verbose
-$ComputerNames | Start-VM -Verbose
-#endregion Start VM
-
 #region Restart VM
 # Restart-VM -Name "DC01" -Verbose
 # Restart-VM -Name "SQL01" -Verbose
@@ -42,19 +38,12 @@ $ComputerNames | Start-VM -Verbose
 $ComputerNames | Start-VM -Verbose
 #endregion Restart VM
 
-#region Stop VM
-# Stop-VM -Name "DC01" -Verbose
-# Stop-VM -Name "SQL01" -Verbose
-# Stop-VM -Name "WEB01" -Verbose
-$ComputerNames | Stop-VM -Verbose
-#endregion Stop VM
-
-#region Snapshot VM
-Checkpoint-VM -Name "DC01" -Verbose
-Checkpoint-VM -Name "SQL01" -Verbose
-Checkpoint-VM -Name "WEB01" -Verbose
+#region Checkpoint VM
+# Checkpoint-VM -Name "DC01" -Verbose
+# Checkpoint-VM -Name "SQL01" -Verbose
+# Checkpoint-VM -Name "WEB01" -Verbose
 $ComputerNames | Checkpoint-VM -Verbose
-#endregion Snapshot VM
+#endregion Checkpoint VM
 
 #region Rename Guest
 # .\Rename-Guest.ps1 -ComputerName "DC01" -Credential $Credential -Verbose
@@ -81,3 +70,20 @@ $ComputerNames | .\Invoke-GuestConfiguration.ps1 -Credential $Credential -Verbos
 $ProgressPreference = "SilentlyContinue"
 Invoke-Pester -Script .\Test-Configurations.ps1 -Output Detailed
 #endregion Test Configurations
+
+#region Get DSC Status
+Invoke-Command -ComputerName @("DC01", "SQL01", "WEB01") -Credential $Credential -ScriptBlock {
+    return New-Object -TypeName PSObject -Property  @{ ComputerName = $env:COMPUTERNAME; Status = (Get-DscConfigurationStatus -ErrorAction SilentlyContinue).Status }
+}
+#endregion Get DSC Status
+
+#region Stop VM
+# Stop-VM -Name "DC01" -Verbose
+# Stop-VM -Name "SQL01" -Verbose
+# Stop-VM -Name "WEB01" -Verbose
+$ComputerNames | Stop-VM -Verbose
+#endregion Stop VM
+
+#region Delete VM
+.\Invoke-HostConfiguration.ps1 -Ensure "Absent" -Verbose
+#endregion Delete VM

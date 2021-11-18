@@ -11,7 +11,7 @@
             RestartCount       = 3
             Subnet             = 20
             TimeZone           = "Eastern Standard Time"
-            WaitTimeout        = 60
+            WaitTimeout        = 300
             FirewallRules      = @"
 Name
 FPS-ICMP4-ERQ-In
