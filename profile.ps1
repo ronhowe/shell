@@ -1,4 +1,5 @@
-#requires -PSEdition Core
+# @TODO @RevisitPSEditionRequirements
+# requires -PSEdition Core
 
 # Create a symbolic link to your repos wherever they live.
 # Set-Location -Path "~"
@@ -9,24 +10,29 @@
 
 $ProgressPreference = "SilentlyContinue"
 
-Set-PSReadLineOption -PredictionSource History
+# Set-PSReadLineOption -PredictionSource History
 
 . "$PSScriptRoot\Import-MyModules.ps1"
-. "$PSScriptRoot\Import-MyConfigurations.ps1"
-. "$PSScriptRoot\Import-MySecrets.ps1"
+# . "$PSScriptRoot\Import-MyConfigurations.ps1"
+# . "$PSScriptRoot\Import-MySecrets.ps1"
 
 if (Test-Path -Path "$PSScriptRoot\ronhowe.omp.json" -ErrorAction SilentlyContinue) {
     Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
 }
 
-if (Test-Path -Path "~\repos\ronhowe\powershell" -ErrorAction SilentlyContinue) {
-    Set-Location -Path "~\repos\ronhowe\powershell"
+$DefaultPath = "~\repos\ronhowe\powershell"
+
+if (Test-Path -Path $DefaultPath -ErrorAction SilentlyContinue) {
+    Set-Location -Path $DefaultPath
 }
 else {
     Set-Location -Path "~"
 }
 
-Clear-Host
+# TODO Custom Code Per Host
+# e.g. For the Developer PowerShell Host in Visual Studio:
+# $DefaultPath = "~\repos\ronhowe\dotnet"
+# Connect-AzAccount -TenantId e70383c6-f597-488d-9796-9c2cb3788d7c
 
 function about {
     Clear-Host

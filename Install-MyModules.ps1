@@ -1,4 +1,5 @@
-#requires -PSEdition Core
+# @TODO @RevisitPSEditionRequirements
+# requires -PSEdition Core
 
 $ProgressPreference = "SilentlyContinue"
 

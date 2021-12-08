@@ -1,5 +1,3 @@
-#requires -PSEdition Core
-
 # Install-Module -Name PSReadLine -AllowPrerelease
 
 & "$PSScriptRoot\Get-MyModules.ps1" |
