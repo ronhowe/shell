@@ -6,7 +6,7 @@
 # New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
 
 # Add links to this profile from any/all PowerShell hosts. (Visual Studio Code, PowerShell, etc.)
-# . "~\repos\ronhowe\powershell\profile.ps1"
+# . "~\repos\ronhowe\shell\profile.ps1"
 
 $ProgressPreference = "SilentlyContinue"
 
@@ -20,7 +20,7 @@ if (Test-Path -Path "$PSScriptRoot\ronhowe.omp.json" -ErrorAction SilentlyContin
     Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
 }
 
-$DefaultPath = "~\repos\ronhowe\powershell"
+$DefaultPath = "~\repos\ronhowe\shell"
 
 if (Test-Path -Path $DefaultPath -ErrorAction SilentlyContinue) {
     Set-Location -Path $DefaultPath
@@ -31,7 +31,7 @@ else {
 
 # TODO Custom Code Per Host
 # e.g. For the Developer PowerShell Host in Visual Studio:
-# $DefaultPath = "~\repos\ronhowe\dotnet"
+# $DefaultPath = "~\repos\ronhowe\kernel"
 # Connect-AzAccount -TenantId e70383c6-f597-488d-9796-9c2cb3788d7c
 
 function about {
