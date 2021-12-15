@@ -67,6 +67,11 @@ function home {
     Set-Location -Path "~"
 }
 
+function kernel {
+    Clear-Host
+    Push-Location -Path "~\repos\ronhowe\kernel"
+}
+
 function junk {
     Clear-Host
     Push-Location -Path "$env:TEMP\junk"
@@ -87,4 +92,9 @@ function ronhowe {
     Write-Host "e" -BackgroundColor Cyan -ForegroundColor Black -NoNewline
     Write-Host " " -NoNewline
     Write-Host "$(Get-Date)" -BackgroundColor Magenta -ForegroundColor White
+}
+
+function shell {
+    Clear-Host
+    Push-Location -Path "~\repos\ronhowe\shell"
 }
