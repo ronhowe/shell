@@ -1,102 +1,131 @@
-param (
-    [ValidateSet("N", "S", "W")]
-    [string]
-    $ObsSource = "S",
+end {
+    Clear-Host
 
-    $ObsPath = "D:/OBS",
-
-    $RenderPath = "D:/Render",
-
-    $HandbrakePath = "~/Downloads/HandBrakeCLI-1.3.3-win-x86_64/HandBrakeCLI.exe",
-
-    $AzCopyPath = "~/Downloads/azcopy_windows_amd64_10.10.0/azcopy.exe",
-
-    $AzureStorageAccount = "https://ronhowe.blob.core.windows.net"
-)
-
-Clear-Host
-
-$ErrorActionPreference = "Stop"
-
-if (Test-Path -Path $ObsPath) {
-    Write-Host "`$ObsPath = $ObsPath"
+    Invoke-ObsWorkflow `
+        -ObsOutputPath "D:\OBS\The Book of Puhg\00-obs" `
+        -HandbrakeOutputPath "D:\OBS\The Book of Puhg\10-handbrake" `
+        -HandbrakeCliPath "~\Downloads\HandBrakeCLI-1.4.2-win-x86_64\HandBrakeCLI.exe" `
+        -AzCopyPath "~\Downloads\azcopy_windows_amd64_10.13.0\azcopy.exe" `
+        -AzureStorageAccount "https://ronhowe.blob.core.windows.net" `
+        -Verbose
 }
-else {
-    Write-Error "Could not find $ObsPath."
-}
+begin {
+    function Invoke-ObsWorkflow {
+        #region Parameters
 
-if (Test-Path -Path $HandbrakePath) {
-    Write-Host "`$HandbrakePath = $HandbrakePath"
-}
-else {
-    Write-Error "Could not find $HandbrakePath."
-}
+        [CmdletBinding()]
+        param (
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullorEmpty()]
+            $ObsOutputPath,
 
-if (Test-Path -Path $AzCopyPath) {
-    Write-Host "`$AzCopyPath = $AzCopyPath"
-}
-else {
-    Write-Error "Could not find $AzCopyPath." -ErrorAction Stop
-}
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullorEmpty()]
+            $HandbrakeOutputPath,
 
-# $ObsSources = @{
-#     "N" = "Neverwinter";
-#     "S" = "Star Wars The Old Republic";
-#     "W" = "World of Warcraft";
-# }
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullorEmpty()]
+            $HandbrakeCliPath,
 
-# $ObsSources.Values | ForEach-Object {
-#     $ObsSourcePath = Join-Path -Path $ObsPath -ChildPath $_
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullorEmpty()]
+            $AzCopyPath,
 
-#     Write-Host "`$ObsSourcePath = $ObsSourcePath"
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullorEmpty()]
+            $AzureStorageAccount
+        )
 
-#     if (-not (Test-Path -Path $ObsSourcePath)) {
-#         New-Item -ItemType Directory -Path $ObsSourcePath
-#     }
-# }
+        #endregion Parameters
 
-#region Process MK4
-Get-ChildItem -Path $ObsPath -Include "*.mkv" -Recurse | ForEach-Object {
-    $MkvPath = $_.FullName
+        $ErrorActionPreference = "Stop"
 
-    Write-Host "`$MkvPath = $MkvPath"
+        #region Validate Input
 
-    $Mp4Path = $MkvPath.Replace(".mkv", ".mp4")
+        if (Test-Path -Path $ObsOutputPath) {
+            Write-Verbose "`$ObsOutputPath = $ObsOutputPath"
+        }
+        else {
+            Write-Error "Could not find $ObsOutputPath."
+        }
 
-    Write-Host "`$Mp4Path = $Mp4Path"
+        if (Test-Path -Path $HandbrakeOutputPath) {
+            Write-Verbose "`$HandbrakeOutputPath = $HandbrakeOutputPath"
+        }
+        else {
+            Write-Error "Could not find $ObsOutputPath." -ErrorAction Stop
+        }
 
-    if (-not (Test-Path -Path $Mp4Path)) {
-        # https://handbrake.fr/docs/en/latest/cli/command-line-reference.html
-        Start-Process -Path $HandbrakePath -ArgumentList "--input", "`"$MkvPath`"", "--output", "`"$Mp4Path`"", "--all-audio" -Wait -NoNewWindow
+        if (Test-Path -Path $HandbrakeCliPath) {
+            Write-Verbose "`$HandbrakeCliPath = $HandbrakeCliPath"
+        }
+        else {
+            Write-Error "Could not find $HandbrakeCliPath." -ErrorAction Stop
+        }
+
+        if (Test-Path -Path $AzCopyPath) {
+            Write-Verbose "`$AzCopyPath = $AzCopyPath"
+        }
+        else {
+            Write-Error "Could not find $AzCopyPath." -ErrorAction Stop
+        }
+
+        #endregion Validate Input
+
+        #region Transcode MKV-to-MK4
+
+        Get-ChildItem -Path $ObsOutputPath -Filter "*.mkv" |
+        ForEach-Object {
+            $MkvPath = $_.FullName
+
+            Write-Verbose "`$MkvPath = $MkvPath"
+
+            $Mp4Path = Join-Path -Path $HandbrakeOutputPath -ChildPath $($_.Name.Replace(".mkv", ".mp4"))
+
+            Write-Verbose "`$Mp4Path = $Mp4Path"
+
+            if (-not (Test-Path -Path $Mp4Path)) {
+                Write-Verbose "Starting Handbrake"
+
+                # https://handbrake.fr/docs/en/latest/cli/command-line-reference.html
+                Start-Process -Path $HandbrakeCliPath -ArgumentList "--input", "`"$MkvPath`"", "--output", "`"$Mp4Path`"", "--all-audio" -Wait -NoNewWindow
+            }
+
+            if (Test-Path -Path $Mp4Path) {
+                Write-Verbose "Deleting MKV"
+
+                Remove-Item -Path $MkvPath
+            }
+            else {
+                Write-Error "MP4 Missing - Handbrake Failure?" -ErrorAction Stop
+            }
+        }
+
+        #endregion Transcode MKV-to-MK4
+
+        #region Upload to Azure
+
+        # Get-ChildItem -Path $HandbrakeOutputPath -Include "*.mp4" -Recurse | ForEach-Object {
+        #     $Mp4Path = $_.FullName
+
+        #     Write-Verbose "`$Mp4Path = $Mp4Path"
+
+        #     $BaseName = $_.BaseName
+
+        #     Write-Verbose "`$BaseName = $BaseName"
+
+        #     # TODO - Test Azure Copy Not Exists
+
+        #     # e.g. https://ronhowe.blob.core.windows.net/star-wars-the-old-republic/Pofe%20and%20Gray%20001%20-%20BAD%20QUALITY.mp4
+        #     $AzureStoragePath = $("{0}/render/{1}.mp4" -f $AzureStorageAccount, $BaseName).ToLower().Replace(" ", "-")
+
+        #     Write-Verbose "`$AzureStoragePath = $AzureStoragePath"
+
+        #     # https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs-upload?toc=/azure/storage/blobs/toc.json
+        #     # Start-Process -Path $AzCopyPath -ArgumentList "copy", $Mp4Path, $AzureStoragePath -Wait -NoNewWindow
+        #     Write-Warning "AzCopy Not Implemented"
+        # }
+
+        #endregion Upload to Azure
     }
-
-# TODO
-# Verify execution result of CLI call before removing the file.
-# Also temporarily make Remove-Item include Read-Host prompt "Are you sure?"
-
-    # Remove-Item -Path $MkvPath
 }
-#endregion Process MK4
-
-#region Process MP4
-Get-ChildItem -Path $RenderPath -Include "*.mp4" -Recurse | ForEach-Object {
-    $Mp4Path = $_.FullName
-
-    Write-Host "`$Mp4Path = $Mp4Path"
-
-    $BaseName = $_.BaseName
-
-    Write-Host "`$BaseName = $BaseName"
-
-    # TODO - Test Azure Copy Not Exists
-
-    # e.g. https://ronhowe.blob.core.windows.net/star-wars-the-old-republic/Pofe%20and%20Gray%20001%20-%20BAD%20QUALITY.mp4
-    $AzureStoragePath = $("{0}/render/{1}.mp4" -f $AzureStorageAccount, $BaseName).ToLower().Replace(" ", "-")
-
-    Write-Host "`$AzureStoragePath = $AzureStoragePath"
-
-    # https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs-upload?toc=/azure/storage/blobs/toc.json
-    # Start-Process -Path $AzCopyPath -ArgumentList "copy", $Mp4Path, $AzureStoragePath -Wait -NoNewWindow
-    Write-Warning "AzCopy Not Implemented"
-}
-#endregion Process MP4
