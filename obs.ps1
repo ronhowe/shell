@@ -1,14 +1,22 @@
+#region call
+
 end {
     Clear-Host
 
     Invoke-ObsWorkflow `
         -ObsOutputPath "D:\OBS\The Book of Puhg\00-obs" `
         -HandbrakeOutputPath "D:\OBS\The Book of Puhg\10-handbrake" `
-        -HandbrakeCliPath "~\Downloads\HandBrakeCLI-1.4.2-win-x86_64\HandBrakeCLI.exe" `
+        -HandbrakeCliPath "~\Downloads\HandBrakeCLI-1.5.0-win-x86_64\HandBrakeCLI.exe" `
         -AzCopyPath "~\Downloads\azcopy_windows_amd64_10.13.0\azcopy.exe" `
         -AzureStorageAccount "https://ronhowe.blob.core.windows.net" `
-        -Verbose
+        -7ZipPath "C:\Program Files\7-Zip\7z.exe"
+    -Verbose
 }
+
+#endregion call
+
+#region implementation
+
 begin {
     function Invoke-ObsWorkflow {
         #region Parameters
@@ -30,6 +38,10 @@ begin {
             [Parameter(Mandatory = $true)]
             [ValidateNotNullorEmpty()]
             $AzCopyPath,
+
+            [Parameter(Mandatory = $true)]
+            [ValidateNotNullorEmpty()]
+            $7ZipPath,
 
             [Parameter(Mandatory = $true)]
             [ValidateNotNullorEmpty()]
@@ -70,9 +82,16 @@ begin {
             Write-Error "Could not find $AzCopyPath." -ErrorAction Stop
         }
 
+        if (Test-Path -Path $7ZipPath) {
+            Write-Verbose "`$7ZipPath = $7ZipPath"
+        }
+        else {
+            Write-Error "Could not find $7ZipPath." -ErrorAction Stop
+        }
+
         #endregion Validate Input
 
-        #region Transcode MKV-to-MK4
+        #region 10-handbrake
 
         Get-ChildItem -Path $ObsOutputPath -Filter "*.mkv" |
         ForEach-Object {
@@ -101,31 +120,48 @@ begin {
             }
         }
 
-        #endregion Transcode MKV-to-MK4
+        #endregion 10-handbrake
 
-        #region Upload to Azure
+        #region 20-azcopy
 
-        # Get-ChildItem -Path $HandbrakeOutputPath -Include "*.mp4" -Recurse | ForEach-Object {
-        #     $Mp4Path = $_.FullName
+        Get-ChildItem -Path $HandbrakeOutputPath -Filter "*.mp4" | ForEach-Object {
+            $Mp4Path = $_.FullName
 
-        #     Write-Verbose "`$Mp4Path = $Mp4Path"
+            Write-Verbose "`$Mp4Path = $Mp4Path"
 
-        #     $BaseName = $_.BaseName
+            $BaseName = $_.BaseName
 
-        #     Write-Verbose "`$BaseName = $BaseName"
+            Write-Verbose "`$BaseName = $BaseName"
 
-        #     # TODO - Test Azure Copy Not Exists
+            # TODO - Test Azure Copy Not Exists
 
-        #     # e.g. https://ronhowe.blob.core.windows.net/star-wars-the-old-republic/Pofe%20and%20Gray%20001%20-%20BAD%20QUALITY.mp4
-        #     $AzureStoragePath = $("{0}/render/{1}.mp4" -f $AzureStorageAccount, $BaseName).ToLower().Replace(" ", "-")
+            # e.g. https://ronhowe.blob.core.windows.net/star-wars-the-old-republic/Pofe%20and%20Gray%20001%20-%20BAD%20QUALITY.mp4
+            $AzureStoragePath = $("{0}/raw/{1}.mp4" -f $AzureStorageAccount, $BaseName).ToLower().Replace(" ", "-")
 
-        #     Write-Verbose "`$AzureStoragePath = $AzureStoragePath"
+            Write-Verbose "`$AzureStoragePath = $AzureStoragePath"
 
-        #     # https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs-upload?toc=/azure/storage/blobs/toc.json
-        #     # Start-Process -Path $AzCopyPath -ArgumentList "copy", $Mp4Path, $AzureStoragePath -Wait -NoNewWindow
-        #     Write-Warning "AzCopy Not Implemented"
-        # }
+            # https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs-upload?toc=/azure/storage/blobs/toc.json
+            # Start-Process -Path $AzCopyPath -ArgumentList "copy", $Mp4Path, $AzureStoragePath -Wait -NoNewWindow
+            Write-Warning "Step Not Implemented (20-azcopy)"
+        }
 
-        #endregion Upload to Azure
+        #endregion 20-azcopy
+
+        #region 30-resolve
+        #endregion 30-resolve
+
+        #region 40-azcopy
+        #endregion 40-azcopy
+
+        #region 50-final
+        #endregion 50-final
+
+        #region 60-youtube
+        #endregion 60-youtube
+
+        #region 70-recycle
+        #endregion 70-recycle
     }
 }
+
+#endregion implementation
