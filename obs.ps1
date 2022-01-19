@@ -1,19 +1,22 @@
-#region call
+#region invocation
 
 end {
     Clear-Host
+    
+    $Parameters = @{
+        ObsOutputPath       = "D:\OBS\The Book of Puhg\00-obs"
+        HandbrakeOutputPath = "D:\OBS\The Book of Puhg\10-handbrake"
+        HandbrakeCliPath    = "~\Downloads\HandBrakeCLI-1.5.0-win-x86_64\HandBrakeCLI.exe"
+        AzCopyPath          = "~\Downloads\azcopy_windows_amd64_10.13.0\azcopy.exe"
+        ZipPath             = "C:\Program Files\7-Zip\7z.exe"
+        AzureStorageAccount = "https://ronhowe.blob.core.windows.net"
+        Verbose             = $true
+    }
 
-    Invoke-ObsWorkflow `
-        -ObsOutputPath "D:\OBS\The Book of Puhg\00-obs" `
-        -HandbrakeOutputPath "D:\OBS\The Book of Puhg\10-handbrake" `
-        -HandbrakeCliPath "~\Downloads\HandBrakeCLI-1.5.0-win-x86_64\HandBrakeCLI.exe" `
-        -AzCopyPath "~\Downloads\azcopy_windows_amd64_10.13.0\azcopy.exe" `
-        -AzureStorageAccount "https://ronhowe.blob.core.windows.net" `
-        -7ZipPath "C:\Program Files\7-Zip\7z.exe"
-    -Verbose
+    Invoke-ObsWorkflow @Parameters
 }
 
-#endregion call
+#endregion invocation
 
 #region implementation
 
@@ -41,7 +44,7 @@ begin {
 
             [Parameter(Mandatory = $true)]
             [ValidateNotNullorEmpty()]
-            $7ZipPath,
+            $ZipPath,
 
             [Parameter(Mandatory = $true)]
             [ValidateNotNullorEmpty()]
@@ -82,11 +85,11 @@ begin {
             Write-Error "Could not find $AzCopyPath." -ErrorAction Stop
         }
 
-        if (Test-Path -Path $7ZipPath) {
-            Write-Verbose "`$7ZipPath = $7ZipPath"
+        if (Test-Path -Path $ZipPath) {
+            Write-Verbose "`$ZipPath = $ZipPath"
         }
         else {
-            Write-Error "Could not find $7ZipPath." -ErrorAction Stop
+            Write-Error "Could not find $ZipPath." -ErrorAction Stop
         }
 
         #endregion Validate Input
