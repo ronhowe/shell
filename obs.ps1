@@ -4,8 +4,8 @@ end {
     Clear-Host
     
     $Parameters = @{
-        ObsOutputPath       = "D:\OBS\The Book of Puhg\00-obs"
-        HandbrakeOutputPath = "D:\OBS\The Book of Puhg\10-handbrake"
+        HandbrakeInputPath  = "D:\OBS\The Book of Puhg\10-handbrake"
+        HandbrakeOutputPath = "D:\OBS\The Book of Puhg\20-azcopy"
         HandbrakeCliPath    = "~\Downloads\HandBrakeCLI-1.5.0-win-x86_64\HandBrakeCLI.exe"
         AzCopyPath          = "~\Downloads\azcopy_windows_amd64_10.13.0\azcopy.exe"
         ZipPath             = "C:\Program Files\7-Zip\7z.exe"
@@ -28,7 +28,7 @@ begin {
         param (
             [Parameter(Mandatory = $true)]
             [ValidateNotNullorEmpty()]
-            $ObsOutputPath,
+            $HandbrakeInputPath,
 
             [Parameter(Mandatory = $true)]
             [ValidateNotNullorEmpty()]
@@ -57,18 +57,18 @@ begin {
 
         #region Validate Input
 
-        if (Test-Path -Path $ObsOutputPath) {
-            Write-Verbose "`$ObsOutputPath = $ObsOutputPath"
+        if (Test-Path -Path $HandbrakeInputPath) {
+            Write-Verbose "`$HandbrakeInputPath = $HandbrakeInputPath"
         }
         else {
-            Write-Error "Could not find $ObsOutputPath."
+            Write-Error "Could not find $HandbrakeInputPath."
         }
 
         if (Test-Path -Path $HandbrakeOutputPath) {
             Write-Verbose "`$HandbrakeOutputPath = $HandbrakeOutputPath"
         }
         else {
-            Write-Error "Could not find $ObsOutputPath." -ErrorAction Stop
+            Write-Error "Could not find $HandbrakeInputPath." -ErrorAction Stop
         }
 
         if (Test-Path -Path $HandbrakeCliPath) {
@@ -96,7 +96,7 @@ begin {
 
         #region 10-handbrake
 
-        Get-ChildItem -Path $ObsOutputPath -Filter "*.mkv" |
+        Get-ChildItem -Path $HandbrakeInputPath -Filter "*.mkv" |
         ForEach-Object {
             $MkvPath = $_.FullName
 
