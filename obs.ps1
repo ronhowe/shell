@@ -4,9 +4,9 @@ end {
     Clear-Host
     
     $Parameters = @{
-        HandbrakeInputPath  = "D:\OBS\The Book of Puhg\10-handbrake"
-        HandbrakeOutputPath = "D:\OBS\The Book of Puhg\20-azcopy"
-        HandbrakeCliPath    = "~\Downloads\HandBrakeCLI-1.5.0-win-x86_64\HandBrakeCLI.exe"
+        HandbrakeInputPath  = "D:\OBS"
+        HandbrakeOutputPath = "D:\OBS"
+        HandbrakeCliPath    = "~\Downloads\HandBrakeCLI-1.5.1-win-x86_64\HandBrakeCLI.exe"
         AzCopyPath          = "~\Downloads\azcopy_windows_amd64_10.13.0\azcopy.exe"
         ZipPath             = "C:\Program Files\7-Zip\7z.exe"
         AzureStorageAccount = "https://ronhowe.blob.core.windows.net"
