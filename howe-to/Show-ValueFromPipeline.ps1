@@ -5,24 +5,32 @@ function Howe-To {
         $Items
     )
     begin {
-        Write-Host "begin" -ForegroundColor Green
+        Write-Host "begin {}" -ForegroundColor Green
     }
     process {
-        Write-Host "process+" -ForegroundColor Yellow
+        Write-Host "process {} begin" -ForegroundColor Yellow
         foreach ($Item in $Items) {
-            Write-Host $Item
+            Write-Output $Item
         }
-        Write-Host "process-" -ForegroundColor Yellow
+        Write-Host "process {} end" -ForegroundColor Yellow
     }
     end {
-        Write-Host "end" -ForegroundColor Red
+        Write-Host "end {}" -ForegroundColor Red
     }
 }
 
 Clear-Host
+
+Write-Host "********************"
+
 Howe-To -Items 1
-Write-Host ""
+
+Write-Host "********************"
+
 Howe-To -Items @(1, 2)
-Write-Host ""
+
+Write-Host "********************"
+
 @(1..2) | Howe-To
-Write-Host ""
+
+Write-Host "********************"
