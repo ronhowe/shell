@@ -10,7 +10,9 @@
 
 $ProgressPreference = "SilentlyContinue"
 
-Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+if ($PSVersionTable.PSEdition -eq "Core") {
+    Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+}
 
 . "$PSScriptRoot\Import-MyModules.ps1"
 # . "$PSScriptRoot\Import-MyConfigurations.ps1"
