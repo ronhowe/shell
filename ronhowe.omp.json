@@ -94,6 +94,19 @@
           "type": "git"
         },
         {
+          "type": "shell",
+          "style": "powerline",
+          "powerline_symbol": "\uE0B0",
+          "foreground": "#ffffff",
+          "background": "#0077c2",
+          "properties": {
+            "mapped_shell_names": {
+              "pwsh": "Core",
+              "powershell": "Desktop"
+            }
+          }
+        },
+        {
           "background": "#33DD2D",
           "background_templates": [
             "{{ if gt .Code 0 }}#f1184c{{ end }}"
