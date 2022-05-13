@@ -1,5 +1,6 @@
 $MyModules = @(
     # "Az",
+    # "Az.ConnectedMachine",
     # "Az.Tools.Predictor",
     # "dbatools",
     # "Microsoft.PowerShell.SecretManagement",
