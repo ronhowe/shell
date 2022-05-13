@@ -5,13 +5,26 @@
       "alignment": "left",
       "segments": [
         {
-          "foreground": "#0178D4",
+          "type": "os",
           "style": "plain",
           "template": "{{ if .WSL }}WSL at {{ end }}{{.Icon}} ",
-          "type": "os"
+          "background": "#000000",
+          "foreground": "#0178D4"
         },
         {
-          "background": "#FF0000",
+          "type": "shell",
+          "style": "plain",
+          "properties": {
+            "mapped_shell_names": {
+              "pwsh": "core",
+              "powershell": "desktop"
+            }
+          },
+          "background": "#000000",
+          "foreground": "#0178D4"
+      },
+        {
+          "background": "#ff0000",
           "foreground": "#000000",
           "style": "plain",
           "template": " r ",
@@ -66,7 +79,7 @@
             "time_format": "2006-01-02 15:04:05"
           },
           "style": "powerline",
-          "template": "<#fff> \uf64f </>{{ .CurrentDate | date .Format }} ",
+          "template": "<#fff> \uf64f </>{{ .CurrentDate | date .Format }}  ",
           "type": "time"
         },
         {
@@ -78,7 +91,7 @@
             "style": "full"
           },
           "style": "powerline",
-          "template": "\ue5ff {{ .Path }} ",
+          "template": "\ue5ff  {{ .Path }} ",
           "type": "path"
         },
         {
@@ -92,19 +105,6 @@
           "style": "powerline",
           "template": " {{ .HEAD }} {{ .BranchStatus }}{{ if .Working.Changed }} \uf044 {{ .Working.String }}{{ end }}{{ if and (.Staging.Changed) (.Working.Changed) }} |{{ end }}{{ if .Staging.Changed }} \uf046 {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0}} \uf692 {{ .StashCount }}{{ end }}{{ if gt .WorktreeCount 0}} \uf1bb {{ .WorktreeCount }}{{ end }} ",
           "type": "git"
-        },
-        {
-          "type": "shell",
-          "style": "powerline",
-          "powerline_symbol": "\uE0B0",
-          "foreground": "#ffffff",
-          "background": "#0077c2",
-          "properties": {
-            "mapped_shell_names": {
-              "pwsh": "Core",
-              "powershell": "Desktop"
-            }
-          }
         },
         {
           "background": "#33DD2D",
