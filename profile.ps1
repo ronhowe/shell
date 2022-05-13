@@ -13,6 +13,7 @@ $ProgressPreference = "SilentlyContinue"
 # https://www.hanselman.com/blog/adding-predictive-intellisense-to-my-windows-terminal-powershell-prompt-with-psreadline
 # https://devblogs.microsoft.com/powershell/announcing-psreadline-2-1-with-predictive-intellisense/?WT.mc_id=-blog-scottha
 if ($PSVersionTable.PSEdition -eq "Core") {
+    Import-Module -Name "Az.Tools.Predictor"
     Set-PSReadLineOption -PredictionSource HistoryAndPlugin
     Set-PSReadLineOption -PredictionViewStyle ListView
 }
