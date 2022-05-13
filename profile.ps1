@@ -73,14 +73,19 @@ function home {
     Set-Location -Path "~"
 }
 
-function kernel {
-    Clear-Host
-    Push-Location -Path "~\repos\ronhowe\kernel"
-}
-
 function junk {
     Clear-Host
     Push-Location -Path "$env:TEMP\junk"
+}
+
+function lab {
+    Clear-Host
+    Push-Location -Path "~\repos\ronhowe\lab"
+}
+
+function kernel {
+    Clear-Host
+    Push-Location -Path "~\repos\ronhowe\kernel"
 }
 
 function repos {
