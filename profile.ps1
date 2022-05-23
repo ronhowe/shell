@@ -109,3 +109,8 @@ function shell {
     Clear-Host
     Push-Location -Path "~\repos\ronhowe\shell"
 }
+
+function Test-Administrator {
+    $identity = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
+    $identity.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+}
