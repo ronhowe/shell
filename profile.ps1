@@ -11,7 +11,7 @@ $ProgressPreference = "SilentlyContinue"
 # https://devblogs.microsoft.com/powershell/announcing-psreadline-2-1-with-predictive-intellisense/?WT.mc_id=-blog-scottha
 # https://www.learningkoala.com/powershell-psreadline-21-and-higher.html#mcetoc_1f2uetbp63ei
 if ($PSVersionTable.PSEdition -eq "Core") {
-    Import-Module -Name "Az.Tools.Predictor"
+    # Import-Module -Name "Az.Tools.Predictor"
     Set-PSReadLineOption -PredictionSource HistoryAndPlugin
     Set-PSReadLineOption -PredictionViewStyle ListView
 }
