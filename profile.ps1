@@ -16,7 +16,7 @@ if ($PSVersionTable.PSEdition -eq "Core") {
     Set-PSReadLineOption -PredictionViewStyle ListView
 }
 
-. "$PSScriptRoot\Import-MyModules.ps1"
+# . "$PSScriptRoot\Import-MyModules.ps1"
 # . "$PSScriptRoot\Import-MyConfigurations.ps1"
 # . "$PSScriptRoot\Import-MySecrets.ps1"
 
@@ -24,38 +24,36 @@ if ($PSVersionTable.PSEdition -eq "Core") {
 #     Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
 # }
 
-Set-Location -Path "~"
-
 function home {
-    Clear-Host
     Set-Location -Path "~"
+    Clear-Host
 }
 
 function junk {
-    Clear-Host
     Set-Location -Path "$env:TEMP\junk"
+    Clear-Host
 }
 
 function lab {
-    Clear-Host
     Set-Location -Path "~\repos\ronhowe\lab"
+    Clear-Host
 }
 
 function kernel {
-    Clear-Host
     Set-Location -Path "~\repos\ronhowe\kernel"
+    Clear-Host
 }
 
-# function prompt {
-#     "> "
-# }
+function prompt {
+    "> "
+}
 
 function repos {
-    Clear-Host
     Set-Location -Path "~\repos"
+    Clear-Host
 }
 
-function ronhowe {
+function me {
     Write-Host "r" -BackgroundColor Red -ForegroundColor Black -NoNewline
     Write-Host "o" -BackgroundColor DarkYellow -ForegroundColor Black -NoNewline
     Write-Host "n" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
@@ -63,16 +61,16 @@ function ronhowe {
     Write-Host "o" -BackgroundColor DarkBlue -ForegroundColor Black -NoNewline
     Write-Host "w" -BackgroundColor Blue -ForegroundColor Black -NoNewline
     Write-Host "e" -BackgroundColor Cyan -ForegroundColor Black -NoNewline
-    Write-Host " " -NoNewline
-    Write-Host "$(Get-Date)" -BackgroundColor Magenta -ForegroundColor White
 }
 
 function shell {
-    Clear-Host
     Set-Location -Path "~\repos\ronhowe\shell"
+    Clear-Host
 }
 
 function Test-Administrator {
     $identity = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
     $identity.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
 }
+
+home
