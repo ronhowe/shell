@@ -3,12 +3,12 @@ $MyModules = @(
     # "Az.ConnectedMachine",
     # "Az.Tools.Predictor",
     # "dbatools",
-    "HostsFile",
+    # "HostsFile",
     # "Microsoft.PowerShell.SecretManagement",
     # "Microsoft.PowerShell.SecretStore",
-    "oh-my-posh",
+    # "oh-my-posh",
     # "Pester",
-    "posh-git"
+    # "posh-git"
     # "PowerConfig"
     # "WindowsCompatibility"
 )

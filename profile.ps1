@@ -1,7 +1,4 @@
-# @TODO @RevisitPSEditionRequirements
-# requires -PSEdition Core
-
-# Create a symbolic link to your repos wherever they live.
+# Create a symbolic link to your repos root folder.
 # Set-Location -Path "~"
 # New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
 
@@ -23,9 +20,9 @@ if ($PSVersionTable.PSEdition -eq "Core") {
 # . "$PSScriptRoot\Import-MyConfigurations.ps1"
 # . "$PSScriptRoot\Import-MySecrets.ps1"
 
-if (Test-Path -Path "$PSScriptRoot\ronhowe.omp.json" -ErrorAction SilentlyContinue) {
-    Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
-}
+# if (Test-Path -Path "$PSScriptRoot\ronhowe.omp.json" -ErrorAction SilentlyContinue) {
+#     Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
+# }
 
 $DefaultPath = "~\repos\ronhowe\shell"
 
@@ -88,6 +85,10 @@ function kernel {
     Clear-Host
     Push-Location -Path "~\repos\ronhowe\kernel"
 }
+
+# function prompt {
+#     "> "
+# }
 
 function repos {
     Clear-Host
