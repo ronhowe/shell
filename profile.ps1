@@ -24,47 +24,7 @@ if ($PSVersionTable.PSEdition -eq "Core") {
 #     Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
 # }
 
-$DefaultPath = "~\repos\ronhowe\shell"
-
-if (Test-Path -Path $DefaultPath -ErrorAction SilentlyContinue) {
-    Set-Location -Path $DefaultPath
-}
-else {
-    Set-Location -Path "~"
-}
-
-# TODO Custom Code Per Host
-# e.g. For the Developer PowerShell Host in Visual Studio:
-# $DefaultPath = "~\repos\ronhowe\kernel"
-# Connect-AzAccount -TenantId e70383c6-f597-488d-9796-9c2cb3788d7c
-
-function about {
-    Clear-Host
-
-    Write-Host ".NET" -ForegroundColor Black -BackgroundColor White
-    dotnet --version | Select-Object -First 1
-
-    Write-Host "Az CLI" -ForegroundColor Black -BackgroundColor White
-    az --version | Select-Object -First 1
-
-    Write-Host "Az Module" -ForegroundColor Black -BackgroundColor White
-    $InstalledAzModule = Get-Module -Name "Az" -ListAvailable | Sort-Object -Property Version -Descending | Select-Object -First 1
-    $InstalledAzModule.Version.ToString()
-    $LatestAzModule = Find-Module -Name "Az"
-    if ($InstalledAzModule.Version -ne $LatestAzModule.Version) { Write-Host "Az module upgrade is available." -ForegroundColor Red }
-
-    Write-Host "GitHub CLI" -ForegroundColor Black -BackgroundColor White
-    gh --version | Select-Object -First 1
-
-    Write-Host "Git CLI" -ForegroundColor Black -BackgroundColor White
-    git --version | Select-Object -First 1
-
-    Write-Host "PowerShell" -ForegroundColor Black -BackgroundColor White
-    pwsh --version | Select-Object -First 1
-
-    Write-Host "Visual Studio Code" -ForegroundColor Black -BackgroundColor White
-    code --version | Select-Object -First 1
-}
+Set-Location -Path "~"
 
 function home {
     Clear-Host
@@ -73,17 +33,17 @@ function home {
 
 function junk {
     Clear-Host
-    Push-Location -Path "$env:TEMP\junk"
+    Set-Location -Path "$env:TEMP\junk"
 }
 
 function lab {
     Clear-Host
-    Push-Location -Path "~\repos\ronhowe\lab"
+    Set-Location -Path "~\repos\ronhowe\lab"
 }
 
 function kernel {
     Clear-Host
-    Push-Location -Path "~\repos\ronhowe\kernel"
+    Set-Location -Path "~\repos\ronhowe\kernel"
 }
 
 # function prompt {
@@ -92,7 +52,7 @@ function kernel {
 
 function repos {
     Clear-Host
-    Push-Location -Path "~\repos"
+    Set-Location -Path "~\repos"
 }
 
 function ronhowe {
@@ -109,7 +69,7 @@ function ronhowe {
 
 function shell {
     Clear-Host
-    Push-Location -Path "~\repos\ronhowe\shell"
+    Set-Location -Path "~\repos\ronhowe\shell"
 }
 
 function Test-Administrator {
