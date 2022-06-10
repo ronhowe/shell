@@ -53,7 +53,7 @@ function repos {
     Clear-Host
 }
 
-function me {
+function ronhowe {
     Write-Host "r" -BackgroundColor Red -ForegroundColor Black -NoNewline
     Write-Host "o" -BackgroundColor DarkYellow -ForegroundColor Black -NoNewline
     Write-Host "n" -BackgroundColor Yellow -ForegroundColor Black -NoNewline
@@ -69,7 +69,7 @@ function shell {
 }
 
 function Test-Administrator {
-    $identity = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
+    $identity = New-Object -TypeName "Security.Principal.WindowsPrincipal" -ArgumentList $([Security.Principal.WindowsIdentity]::GetCurrent())
     $identity.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
 }
 
