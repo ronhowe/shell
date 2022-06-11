@@ -73,4 +73,6 @@ function Test-Administrator {
     $identity.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
 }
 
-home
+Set-Location -Path "~"
+Clear-Host
+Write-Host "READY"
