@@ -45,7 +45,7 @@ function kernel {
 }
 
 function prompt {
-    "> "
+    " `b"
 }
 
 function repos {
