@@ -44,9 +44,9 @@ function kernel {
     Clear-Host
 }
 
-function prompt {
-    " `b"
-}
+# function prompt {
+#     " `b"
+# }
 
 function repos {
     Set-Location -Path "~\repos"
