@@ -1,3 +1,9 @@
+#requires -PSEdition Core
+# All versions as of 2022-06-28.
+#requires -Modules @{ ModuleName = "Az.Accounts"; ModuleVersion = "2.8.0" }
+#requires -Modules @{ ModuleName = "Az.Tools.Predictor"; ModuleVersion = "1.0.1" }
+#requires -Modules @{ ModuleName = "posh-git"; ModuleVersion = "1.0.1" }
+
 # Create a symbolic link to your repos root folder.
 # Set-Location -Path "~"
 # New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
@@ -7,14 +13,7 @@
 
 $ProgressPreference = "SilentlyContinue"
 
-# https://www.hanselman.com/blog/adding-predictive-intellisense-to-my-windows-terminal-powershell-prompt-with-psreadline
-# https://devblogs.microsoft.com/powershell/announcing-psreadline-2-1-with-predictive-intellisense/?WT.mc_id=-blog-scottha
-# https://www.learningkoala.com/powershell-psreadline-21-and-higher.html#mcetoc_1f2uetbp63ei
-if ($PSVersionTable.PSEdition -eq "Core") {
-    # Import-Module -Name "Az.Tools.Predictor"
-    Set-PSReadLineOption -PredictionSource HistoryAndPlugin
-    Set-PSReadLineOption -PredictionViewStyle ListView
-}
+Set-PSReadLineOption -PredictionViewStyle ListView
 
 # . "$PSScriptRoot\Import-MyModules.ps1"
 # . "$PSScriptRoot\Import-MyConfigurations.ps1"
@@ -23,6 +22,12 @@ if ($PSVersionTable.PSEdition -eq "Core") {
 # if (Test-Path -Path "$PSScriptRoot\ronhowe.omp.json" -ErrorAction SilentlyContinue) {
 #     Set-PoshPrompt -Theme "$PSScriptRoot\ronhowe.omp.json"
 # }
+
+function default {
+    function global:prompt {
+        "PS $($executionContext.SessionState.Path.CurrentLocation)$('>' * ($nestedPromptLevel + 1)) ";
+    }
+}
 
 function home {
     Set-Location -Path "~"
@@ -44,9 +49,9 @@ function kernel {
     Clear-Host
 }
 
-# function prompt {
-#     " `b"
-# }
+function quiet {
+    function global:prompt { " `b"; }
+}
 
 function repos {
     Set-Location -Path "~\repos"
@@ -75,4 +80,4 @@ function Test-Administrator {
 
 Set-Location -Path "~"
 Clear-Host
-Write-Host "READY"
+Write-Host "READY" -ForegroundColor Green
