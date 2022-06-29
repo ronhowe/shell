@@ -41,22 +41,18 @@ function edit {
 
 function home {
     Set-Location -Path "~"
-    Clear-Host
 }
 
 function junk {
     Set-Location -Path "$env:TEMP\junk"
-    Clear-Host
 }
 
 function lab {
     Set-Location -Path "~\repos\ronhowe\lab"
-    Clear-Host
 }
 
 function kernel {
     Set-Location -Path "~\repos\ronhowe\kernel"
-    Clear-Host
 }
 
 function quiet {
@@ -65,7 +61,6 @@ function quiet {
 
 function repos {
     Set-Location -Path "~\repos"
-    Clear-Host
 }
 
 function ronhowe {
@@ -88,6 +83,6 @@ function Test-Administrator {
     $identity.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
 }
 
-Set-Location -Path "~"
+home
 Clear-Host
 Write-Host "READY" -ForegroundColor Green
