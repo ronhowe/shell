@@ -29,6 +29,16 @@ function default {
     }
 }
 
+function edit {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        $Path
+    )
+    Start-Process -Path "C:\Program Files\Notepad++\notepad++.exe" -ArgumentList "`"$Path`""
+}
+
 function home {
     Set-Location -Path "~"
     Clear-Host
