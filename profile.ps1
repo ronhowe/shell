@@ -75,7 +75,6 @@ function ronhowe {
 
 function shell {
     Set-Location -Path "~\repos\ronhowe\shell"
-    Clear-Host
 }
 
 function Test-Administrator {
