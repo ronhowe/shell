@@ -10,7 +10,7 @@ param (
 
     [ValidateNotNullorEmpty()]
     [string[]]
-    $TargetProfileId = @("000000000000", "111111111111")
+    $TargetProfileId = @("710386622875") # Puhf
 )
 
 Get-ChildItem -Path $ProfilePath -Filter "$ProfileId.*" |
