@@ -53,9 +53,13 @@ begin {
 
         #endregion Parameters
 
+        #region Configuration
+
         $ErrorActionPreference = "Stop"
 
-        #region Validate Input
+        #endregion Configuration
+
+        #region Validation
 
         if (Test-Path -Path $HandbrakeInputPath) {
             Write-Verbose "`$HandbrakeInputPath = $HandbrakeInputPath"
@@ -92,7 +96,7 @@ begin {
             Write-Error "Could not find $ZipPath." -ErrorAction Stop
         }
 
-        #endregion Validate Input
+        #endregion Validation
 
         #region 10-handbrake
 
@@ -107,7 +111,7 @@ begin {
             Write-Verbose "`$Mp4Path = $Mp4Path"
 
             if (-not (Test-Path -Path $Mp4Path)) {
-                Write-Verbose "Starting Handbrake"
+                Write-Verbose "Starting Handbrake CLI"
 
                 # https://handbrake.fr/docs/en/latest/cli/command-line-reference.html
                 Start-Process -Path $HandbrakeCliPath -ArgumentList "--input", "`"$MkvPath`"", "--output", "`"$Mp4Path`"", "--all-audio" -Wait -NoNewWindow
@@ -116,54 +120,74 @@ begin {
             if (Test-Path -Path $Mp4Path) {
                 Write-Verbose "Deleting MKV"
 
-                Remove-Item -Path $MkvPath
+                # Remove-Item -Path $MkvPath
             }
             else {
-                Write-Error "MP4 Missing - Handbrake Failure?" -ErrorAction Stop
+                Write-Error "MP4 Missing After Call To Handbrake CLI" -ErrorAction Stop
             }
         }
 
         #endregion 10-handbrake
 
-        #region 20-azcopy
+        Write-Warning "Steps Not Implemented"
 
-        Get-ChildItem -Path $HandbrakeOutputPath -Filter "*.mp4" | ForEach-Object {
-            $Mp4Path = $_.FullName
+        if ($false) {
 
-            Write-Verbose "`$Mp4Path = $Mp4Path"
+            #region 20-azcopy
 
-            $BaseName = $_.BaseName
+            Get-ChildItem -Path $HandbrakeOutputPath -Filter "*.mp4" | ForEach-Object {
 
-            Write-Verbose "`$BaseName = $BaseName"
+                $Mp4Path = $_.FullName
 
-            # TODO - Test Azure Copy Not Exists
+                Write-Verbose "`$Mp4Path = $Mp4Path"
 
-            # e.g. https://ronhowe.blob.core.windows.net/star-wars-the-old-republic/Pofe%20and%20Gray%20001%20-%20BAD%20QUALITY.mp4
-            $AzureStoragePath = $("{0}/raw/{1}.mp4" -f $AzureStorageAccount, $BaseName).ToLower().Replace(" ", "-")
+                $BaseName = $_.BaseName
 
-            Write-Verbose "`$AzureStoragePath = $AzureStoragePath"
+                Write-Verbose "`$BaseName = $BaseName"
 
-            # https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs-upload?toc=/azure/storage/blobs/toc.json
-            # Start-Process -Path $AzCopyPath -ArgumentList "copy", $Mp4Path, $AzureStoragePath -Wait -NoNewWindow
-            Write-Warning "Step Not Implemented (20-azcopy)"
+                # TODO - Test Azure Copy Not Exists
+
+                # e.g. https://ronhowe.blob.core.windows.net/star-wars-the-old-republic/Pofe%20and%20Gray%20001%20-%20BAD%20QUALITY.mp4
+                $AzureStoragePath = $("{0}/raw/{1}.mp4" -f $AzureStorageAccount, $BaseName).ToLower().Replace(" ", "-")
+
+                Write-Verbose "`$AzureStoragePath = $AzureStoragePath"
+
+                # https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs-upload?toc=/azure/storage/blobs/toc.json
+                Start-Process -Path $AzCopyPath -ArgumentList "copy", $Mp4Path, $AzureStoragePath -Wait -NoNewWindow
+            }
+
+            #endregion 20-azcopy
+
+            #region 30-resolve
+
+            # TODO
+
+            #endregion 30-resolve
+
+            #region 40-azcopy
+
+            # TODO
+
+            #endregion 40-azcopy
+
+            #region 50-final
+
+            # TODO
+
+            #endregion 50-final
+
+            #region 60-youtube
+
+            # TODO
+
+            #endregion 60-youtube
+
+            #region 70-recycle
+
+            # TODO
+
+            #endregion 70-recycle
         }
-
-        #endregion 20-azcopy
-
-        #region 30-resolve
-        #endregion 30-resolve
-
-        #region 40-azcopy
-        #endregion 40-azcopy
-
-        #region 50-final
-        #endregion 50-final
-
-        #region 60-youtube
-        #endregion 60-youtube
-
-        #region 70-recycle
-        #endregion 70-recycle
     }
 }
 
