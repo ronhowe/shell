@@ -4,8 +4,8 @@ end {
     $Parameters = @{
         HandbrakeInputPath  = "D:\OBS\debug"
         HandbrakeOutputPath = "D:\OBS\debug"
-        HandbrakeCliPath    = "~\repos\ronhowe\shell\bin\HandBrakeCLI-1.5.1-win-x86_64\HandBrakeCLI.exe"
-        AzCopyPath          = "~\repos\ronhowe\shell\bin\azcopy_windows_amd64_10.15.0\azcopy.exe"
+        HandbrakeCliPath    = "~\repos\ronhowe\shell\dependencies\HandBrakeCLI-1.5.1-win-x86_64\HandBrakeCLI.exe"
+        AzCopyPath          = "~\repos\ronhowe\shell\dependencies\azcopy_windows_amd64_10.15.0\azcopy.exe"
         ZipClientPath       = "C:\Program Files\7-Zip\7z.exe"
         AzureStorageAccount = "https://ronhowe.blob.core.windows.net"
         Verbose             = $true
