@@ -1,14 +1,12 @@
 #region invocation
 
 end {
-    Clear-Host
-    
     $Parameters = @{
-        HandbrakeInputPath  = "D:\OBS"
-        HandbrakeOutputPath = "D:\OBS"
-        HandbrakeCliPath    = "~\Downloads\HandBrakeCLI-1.5.1-win-x86_64\HandBrakeCLI.exe"
-        AzCopyPath          = "~\Downloads\azcopy_windows_amd64_10.13.0\azcopy.exe"
-        ZipPath             = "C:\Program Files\7-Zip\7z.exe"
+        HandbrakeInputPath  = "D:\OBS\debug"
+        HandbrakeOutputPath = "D:\OBS\debug"
+        HandbrakeCliPath    = "~\repos\ronhowe\shell\bin\HandBrakeCLI-1.5.1-win-x86_64\HandBrakeCLI.exe"
+        AzCopyPath          = "~\repos\ronhowe\shell\bin\azcopy_windows_amd64_10.15.0\azcopy.exe"
+        ZipClientPath       = "C:\Program Files\7-Zip\7z.exe"
         AzureStorageAccount = "https://ronhowe.blob.core.windows.net"
         Verbose             = $true
     }
@@ -22,7 +20,7 @@ end {
 
 begin {
     function Invoke-ObsWorkflow {
-        #region Parameters
+        #region Input Parameters
 
         [CmdletBinding()]
         param (
@@ -44,61 +42,71 @@ begin {
 
             [Parameter(Mandatory = $true)]
             [ValidateNotNullorEmpty()]
-            $ZipPath,
+            $ZipClientPath,
 
             [Parameter(Mandatory = $true)]
             [ValidateNotNullorEmpty()]
             $AzureStorageAccount
         )
 
-        #endregion Parameters
+        #endregion Input Parameters
 
-        #region Configuration
+        #region Configure Runtime Environment
 
         $ErrorActionPreference = "Stop"
 
-        #endregion Configuration
+        #endregion Configure Runtime Environment
 
-        #region Validation
+        #region Validate Parameters
 
+        Write-Verbose "`$HandbrakeInputPath = $HandbrakeInputPath"
         if (Test-Path -Path $HandbrakeInputPath) {
-            Write-Verbose "`$HandbrakeInputPath = $HandbrakeInputPath"
+            Write-Verbose "Found $HandbrakeInputPath"
         }
         else {
             Write-Error "Could not find $HandbrakeInputPath."
         }
 
+        Write-Verbose "`$HandbrakeOutputPath = $HandbrakeOutputPath"
         if (Test-Path -Path $HandbrakeOutputPath) {
-            Write-Verbose "`$HandbrakeOutputPath = $HandbrakeOutputPath"
+            Write-Verbose "Found $HandbrakeOutputPath"
         }
         else {
             Write-Error "Could not find $HandbrakeInputPath." -ErrorAction Stop
         }
 
+        Write-Verbose "`$HandbrakeCliPath = $HandbrakeCliPath"
         if (Test-Path -Path $HandbrakeCliPath) {
-            Write-Verbose "`$HandbrakeCliPath = $HandbrakeCliPath"
+            Write-Verbose "Found $HandbrakeCliPath"
         }
         else {
             Write-Error "Could not find $HandbrakeCliPath." -ErrorAction Stop
         }
 
-        if (Test-Path -Path $AzCopyPath) {
+        Write-Debug "Section Not Implemented"
+        if ($false) {
             Write-Verbose "`$AzCopyPath = $AzCopyPath"
-        }
-        else {
-            Write-Error "Could not find $AzCopyPath." -ErrorAction Stop
+            if (Test-Path -Path $AzCopyPath) {
+                Write-Verbose "Found $AzCopyPath"
+            }
+            else {
+                Write-Error "Could not find $AzCopyPath." -ErrorAction Stop
+            }
+
+            Write-Verbose "`$ZipClientPath = $ZipClientPath"
+            if (Test-Path -Path $ZipClientPath) {
+                Write-Verbose "Found $ZipClientPath"
+            }
+            else {
+                Write-Error "Could not find $ZipClientPath." -ErrorAction Stop
+            }
         }
 
-        if (Test-Path -Path $ZipPath) {
-            Write-Verbose "`$ZipPath = $ZipPath"
-        }
-        else {
-            Write-Error "Could not find $ZipPath." -ErrorAction Stop
-        }
+        #endregion Validate Parameters
 
-        #endregion Validation
+        #region Transcode with Handbrake CLI
 
-        #region 10-handbrake
+        Write-Verbose "Begin Transcode with Handbrake CLI"
 
         Get-ChildItem -Path $HandbrakeInputPath -Filter "*.mkv" |
         ForEach-Object {
@@ -117,23 +125,26 @@ begin {
                 Start-Process -Path $HandbrakeCliPath -ArgumentList "--input", "`"$MkvPath`"", "--output", "`"$Mp4Path`"", "--all-audio" -Wait -NoNewWindow
             }
 
-            if (Test-Path -Path $Mp4Path) {
-                Write-Verbose "Deleting MKV"
+            # TODO - Handle Process Return Code
 
-                # Remove-Item -Path $MkvPath
+            if (Test-Path -Path $Mp4Path) {
+                Write-Verbose "Confirmed $Mp4Path"
             }
             else {
+                Write-Error "Could not find $Mp4Path"
                 Write-Error "MP4 Missing After Call To Handbrake CLI" -ErrorAction Stop
             }
+
+            Write-Verbose "End Transcode with Handbrake CLI"
         }
 
-        #endregion 10-handbrake
+        #endregion Transcode with Handbrake CLI
 
-        Write-Warning "Steps Not Implemented"
-
+        Write-Debug "Section Not Implemented"
         if ($false) {
+            #region Upload to Azure Storage
 
-            #region 20-azcopy
+            Write-Verbose "Begin Upload to Azure Storage"
 
             Get-ChildItem -Path $HandbrakeOutputPath -Filter "*.mp4" | ForEach-Object {
 
@@ -152,42 +163,22 @@ begin {
 
                 Write-Verbose "`$AzureStoragePath = $AzureStoragePath"
 
+                Write-Verbose "Starting AzCopy"
+
                 # https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-blobs-upload?toc=/azure/storage/blobs/toc.json
                 Start-Process -Path $AzCopyPath -ArgumentList "copy", $Mp4Path, $AzureStoragePath -Wait -NoNewWindow
+
+                # TODO - Handle Process Return Code
+                # TODO - Verify Azure Storage Blob
+                # TODO - Set Azure Storage Blob to Cold/Archive?
+
+                Write-Verbose "End Upload to Azure Storage"
             }
 
-            #endregion 20-azcopy
-
-            #region 30-resolve
-
-            # TODO
-
-            #endregion 30-resolve
-
-            #region 40-azcopy
-
-            # TODO
-
-            #endregion 40-azcopy
-
-            #region 50-final
-
-            # TODO
-
-            #endregion 50-final
-
-            #region 60-youtube
-
-            # TODO
-
-            #endregion 60-youtube
-
-            #region 70-recycle
-
-            # TODO
-
-            #endregion 70-recycle
+            #endregion Upload to Azure Storage
         }
+
+        Write-Verbose "OBS Workflow Complete"
     }
 }
 
