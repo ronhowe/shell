@@ -1,9 +1,11 @@
 #region invocation
 
 end {
+    Start-Transcript -Path  "D:\OBS\Start-ObsWorkflow.log"
+
     $Parameters = @{
-        HandbrakeInputPath  = "D:\OBS\debug"
-        HandbrakeOutputPath = "D:\OBS\debug"
+        HandbrakeInputPath  = "D:\OBS"
+        HandbrakeOutputPath = "D:\OBS"
         HandbrakeCliPath    = "~\repos\ronhowe\shell\dependencies\HandBrakeCLI-1.5.1-win-x86_64\HandBrakeCLI.exe"
         AzCopyPath          = "~\repos\ronhowe\shell\dependencies\azcopy_windows_amd64_10.15.0\azcopy.exe"
         ZipClientPath       = "C:\Program Files\7-Zip\7z.exe"
@@ -11,7 +13,13 @@ end {
         Verbose             = $true
     }
 
+    # Debug Overrides
+    # HandbrakeInputPath  = "D:\OBS\debug"
+    # HandbrakeOutputPath = "D:\OBS\debug"
+
     Invoke-ObsWorkflow @Parameters
+
+    Stop-Transcript
 }
 
 #endregion invocation
