@@ -44,15 +44,21 @@ function home {
 }
 
 function junk {
-    Set-Location -Path "$env:TEMP\junk"
+    Set-Location -Path "~\junk"
+}
+
+function kernel {
+    Set-Location -Path "~\repos\ronhowe\kernel"
 }
 
 function lab {
     Set-Location -Path "~\repos\ronhowe\lab"
 }
 
-function kernel {
-    Set-Location -Path "~\repos\ronhowe\kernel"
+function log {
+    # e.g. ~\junk\637940767727486236.log
+    $TranscriptPath = Join-Path -Path "~\junk" -ChildPath "$($(Get-Date).Ticks).log"
+    Start-Transcript -Path $TranscriptPath
 }
 
 function quiet {
