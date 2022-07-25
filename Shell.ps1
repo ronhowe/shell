@@ -9,7 +9,7 @@
 # New-Item -ItemType SymbolicLink -Path "repos" -Target "D:\repos"
 
 # Add links to this profile from any/all PowerShell hosts. (Visual Studio Code, PowerShell, etc.)
-# . "~\repos\ronhowe\shell\profile.ps1"
+# . "~\repos\ronhowe\shell\Shell.ps1"
 
 $ProgressPreference = "SilentlyContinue"
 
