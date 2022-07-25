@@ -1,3 +1,4 @@
+#requires -RunAsAdministrator
 #requires -PSEdition Core
 # All versions as of 2022-06-28.
 #requires -Modules @{ ModuleName = "Az.Accounts"; ModuleVersion = "2.8.0" }
@@ -81,6 +82,11 @@ function ronhowe {
 
 function shell {
     Set-Location -Path "~\repos\ronhowe\shell"
+}
+
+function sql {
+    Get-Service -Name "MSSQLSERVER" | Start-Service -Verbose
+    Get-Service -Name "SQLServerAgent" | Start-Service -Verbose
 }
 
 function Test-Administrator {
